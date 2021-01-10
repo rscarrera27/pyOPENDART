@@ -34,6 +34,9 @@ class Market(Enum):
     KONEX = "N"
     ETC = "E"
 
+    def __missing__(self, key):
+        return None
+
 
 class SortBy(Enum):
     DATE = "date"
@@ -83,7 +86,7 @@ class SearchResult:
                 corporation_code=resp.get("corp_code"),
                 corporation_name=resp.get("corp_name"),
                 stock_code=resp.get("stock_code"),
-                market=Market(resp["corp_cls"]) if resp.get("corp_cls") else None,
+                market=Market(resp.get("corp_cls")),
                 report_name=resp.get("report_nm"),
                 receipt_no=resp.get("rcept_no"),
                 filler_name=resp.get("flr_nm"),
