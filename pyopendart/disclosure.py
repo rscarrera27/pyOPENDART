@@ -15,7 +15,7 @@ class DateRange:
         return {"bgn_de": self.begin.strftime("%Y%m%d"), "end_de": self.end.strftime("%Y%m%d")}
 
 
-class PublicNotificationType(Enum):
+class DisclosureType(Enum):
     A = "A"  # 정기공시
     B = "B"  # 주요사항보고
     C = "C"  # 발행공시
@@ -154,7 +154,7 @@ class CompanyOverview:
         )
 
 
-class PublicNotification:
+class Disclosure:
     def __init__(self, api_key: str) -> None:
         self.client = DartClient(api_key)
 
@@ -163,7 +163,7 @@ class PublicNotification:
         corporation_code: Optional[str] = None,  # corp_code
         date_range: Optional[DateRange] = None,  # bgn_de, end_de
         only_last_report: Optional[bool] = None,  # last_reprt_at
-        type: Optional[PublicNotificationType] = None,  # pblntf_ty
+        type: Optional[DisclosureType] = None,  # pblntf_ty
         type_detail: Optional[str] = None,  # pblntf_detail_ty TODO: enum
         market: Optional[Market] = None,  # corp_cls
         sort: Optional[Sort] = None,  # sort, sort_mth
