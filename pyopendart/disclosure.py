@@ -3,6 +3,8 @@ from datetime import date
 from enum import Enum
 from typing import Optional, Tuple
 
+from dateutil.parser import parse as datetime_parse
+
 from pyopendart.common import DartClient
 
 
@@ -77,7 +79,7 @@ class SearchResult:
         report_name: str
         receipt_no: str
         filler_name: str
-        receipt_date: str
+        receipt_date: date
         remarks: str
 
         @staticmethod
@@ -90,7 +92,7 @@ class SearchResult:
                 report_name=resp.get("report_nm"),
                 receipt_no=resp.get("rcept_no"),
                 filler_name=resp.get("flr_nm"),
-                receipt_date=resp.get("rcept_dt"),
+                receipt_date=datetime_parse(resp.get("rcept_dt")).date(),
                 remarks=resp.get("rm"),
             )
 
@@ -149,8 +151,8 @@ class CompanyOverview:
             phone_number=resp.get("phn_no"),
             fax_number=resp.get("fax_no"),
             industry_code=resp.get("induty_code"),
-            established_date=resp.get("est_dt"),
-            accounting_month=resp.get("acc_mt"),
+            established_date=datetime_parse(resp.get("est_dt")).date(),
+            accounting_month=int(resp.get("acc_mt")),
         )
 
 
