@@ -5,7 +5,7 @@ from typing import Optional, Tuple
 
 from dateutil.parser import parse as datetime_parse
 
-from pyopendart.common import DartClient
+from pyopendart.client import DartClient
 
 
 @dataclass

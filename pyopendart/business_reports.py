@@ -1,4 +1,4 @@
-from pyopendart.common import DartClient
+from pyopendart.client import DartClient
 
 
 class BusinessReports:
