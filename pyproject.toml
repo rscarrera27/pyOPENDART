@@ -11,6 +11,27 @@ requests = "^2.25.1"
 furl = "^2.1.0"
 
 [tool.poetry.dev-dependencies]
+black = "^20.8b1"
+isort = "^5.7.0"
+
+[tool.black]
+line-length = 120
+target_version = ['py37']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs         # exclude a few common directories in the
+  | \.git          # root of the project
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | buck-out
+  | build
+  | dist
+  | tests
+)/
+'''
+
 
 [build-system]
 requires = ["poetry>=0.12"]
