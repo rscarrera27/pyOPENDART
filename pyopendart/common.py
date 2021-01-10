@@ -35,6 +35,7 @@ class DartClient(metaclass=_DartSingleton):
             exception = {
                 "010": exceptions.UnregisteredKey,
                 "011": exceptions.UnusableKey,
+                "013": exceptions.Empty,
                 "020": exceptions.RateLimited,
                 "100": exceptions.InvalidParameter,
                 "800": exceptions.UnderMaintenance,

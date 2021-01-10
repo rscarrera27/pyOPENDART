@@ -22,6 +22,15 @@ class UnusableKey(DartException):
         super(UnusableKey, self).__init__("011", message)
 
 
+class Empty(DartException):
+    """
+    조회된 데이타가 없습니다.
+    """
+
+    def __init__(self, message: str):
+        super(Empty, self).__init__("013", message)
+
+
 class RateLimited(DartException):
     """
     요청 제한을 초과하였습니다.
