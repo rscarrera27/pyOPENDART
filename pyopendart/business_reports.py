@@ -2,7 +2,7 @@ import locale
 from dataclasses import dataclass
 from datetime import date
 from enum import Enum
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 
 from dateutil.parser import parse as datetime_parse
 
@@ -17,16 +17,23 @@ class ReportCode(Enum):
     Q4 = 11011  # 사업보고서
 
 
-def dart_atoi(a: str) -> int:
-    return int(a.replace(",", ""))
+def dart_atoi(a: str) -> Union[int, float]:
+    try:
+        return int(a.replace(",", ""))
+    except ValueError:
+        return float(a.replace(",", ""))
 
 
 @dataclass(frozen=True)
-class CapitalVariation:
+class BusinessReportItemBase:
     receipt_no: str  # rcept_no
     market: Market  # corp_cls
     corporation_code: str  # corp_code
     corporation_name: str  # corp_name
+
+
+@dataclass(frozen=True)
+class CapitalVariation(BusinessReportItemBase):
     date: date  # stock_isu_dcrs_de
     title: str  # isu_dcrs_stle
     stock_type: str  # isu_dcrs_stock_knd
@@ -50,6 +57,29 @@ class CapitalVariation:
         )
 
 
+@dataclass(frozen=True)
+class DividendInfo(BusinessReportItemBase):
+    title: str  # se
+    stock_type: Optional[str]  # stock_knd
+    current_term: Union[int, float]  # thstrm
+    prev_term: Union[int, float]  # frmtrm
+    prev_prev_term: Union[int, float]  # lwfr
+
+    @staticmethod
+    def from_dart_resp(resp):
+        return DividendInfo(
+            receipt_no=resp.get("rcept_no"),
+            market=Market(resp.get("corp_cls")),
+            corporation_code=resp.get("corp_code"),
+            corporation_name=resp.get("corp_name"),
+            title=resp.get("se"),
+            stock_type=resp.get("stock_knd"),
+            current_term=dart_atoi(resp.get("thstrm")),
+            prev_term=dart_atoi(resp.get("frmtrm")),
+            prev_prev_term=dart_atoi(resp.get("lwfr")),
+        )
+
+
 class BusinessReports:
     def __init__(self, api_key: str) -> None:
         self.client = DartClient(api_key)
@@ -67,8 +97,13 @@ class BusinessReports:
 
         return tuple(CapitalVariation.from_dart_resp(i) for i in resp.get("list", []))
 
-    def get_dividend_info(self):
-        pass
+    def get_dividend_info(
+        self, corporation_code: str, business_year: int, report_code: ReportCode
+    ) -> Tuple[DividendInfo]:
+        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_code.value}
+        resp = self.client.json("alotMatter", **params)
+
+        return tuple(DividendInfo.from_dart_resp(i) for i in resp.get("list", []) if i.get("thstrm") != "-")
 
     def get_treasury_shares_status(self):
         pass
