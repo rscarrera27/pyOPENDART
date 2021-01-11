@@ -156,7 +156,7 @@ class Disclosure:
 
         return SearchResult.from_dart_resp(resp)
 
-    def company_overview(
+    def get_company_overview(
         self,
         corporation_code: str,  # corp_code
     ) -> CompanyOverview:

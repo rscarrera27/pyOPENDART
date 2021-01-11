@@ -1,6 +1,6 @@
 class FinancialInformation:
-    def financial_statements_of_major_account_titles(self):
+    def get_financial_statements_of_major_account_titles(self):
         pass
 
-    def all_financial_statements(self):
+    def get_all_financial_statements(self):
         pass

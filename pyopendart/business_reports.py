@@ -5,38 +5,38 @@ class BusinessReports:
     def __init__(self, api_key: str) -> None:
         self.client = DartClient(api_key)
 
-    def capital_increases_and_decreases(self):
+    def get_capital_variation(self):
         pass
 
-    def dividend(self):
+    def get_dividend_info(self):
         pass
 
-    def treasury_shares_acquisition_and_disposition(self):
+    def get_treasury_shares_status(self):
         pass
 
-    def major_shareholders_status(self):
+    def get_major_shareholders_status(self):
         pass
 
-    def major_shareholders_changes(self):
+    def get_changes_in_major_shareholders(self):
         pass
 
-    def minority_shareholders_status(self):
+    def get_minority_shareholders_status(self):
         pass
 
-    def executives_status(self):
+    def get_directors(self):
         pass
 
-    def employees_status(self):
+    def get_employee_status(self):
         pass
 
-    def executives_individual_compensation_status(self):
+    def get_individual_executive_compensation_status(self):
         pass
 
-    def executives_total_compensation_status(self):
+    def get_executive_compensation_status(self):
         pass
 
-    def individual_compensation_top_5(self):
+    def get_top_5_individual_executive_compensation(self):
         pass
 
-    def investment_in_other_corporations(self):
+    def get_investment_in_other_corporations(self):
         pass

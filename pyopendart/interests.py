@@ -5,8 +5,8 @@ class DisclosureOfInterests:
     def __init__(self, api_key: str) -> None:
         self.client = DartClient(api_key)
 
-    def major_shareholders_report(self):
+    def get_major_shares_report(self):
         pass
 
-    def executive_shareholders_report(self):
+    def get_executive_shareholders_report(self):
         pass
