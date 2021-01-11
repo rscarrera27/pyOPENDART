@@ -80,6 +80,39 @@ class DividendInfo(BusinessReportItemBase):
         )
 
 
+@dataclass(frozen=True)
+class TreasurySharesStatus(BusinessReportItemBase):
+    stock_type: str  # stock_knd
+    acquisition_methods: Tuple[str, str, str]  # acqs_mth1, acqs_mth2, acqs_mth3
+    base_quantity: Optional[int]  # bsis_qy
+    acquired: Optional[int]  # change_qy_acqs
+    disposed: Optional[int]  # change_qy_dsps
+    retired: Optional[int]  # change_qy_incnr
+    result: Optional[int]  # trmend_qy
+    remarks: str  # rm
+
+    @staticmethod
+    def from_dart_resp(resp):
+        return TreasurySharesStatus(
+            receipt_no=resp.get("rcept_no"),
+            market=Market(resp.get("corp_cls")),
+            corporation_code=resp.get("corp_code"),
+            corporation_name=resp.get("corp_name"),
+            stock_type=resp.get("stock_knd"),
+            acquisition_methods=(
+                resp.get("acqs_mth1"),
+                resp.get("acqs_mth2"),
+                resp.get("acqs_mth3"),
+            ),
+            base_quantity=dart_atoi(resp.get("bsis_qy")),
+            acquired=dart_atoi(resp.get("change_qy_acqs")),
+            disposed=dart_atoi(resp.get("change_qy_dsps")),
+            retired=dart_atoi(resp.get("change_qy_incnr")),
+            result=dart_atoi(resp.get("trmend_qy")),
+            remarks=resp.get("rm"),
+        )
+
+
 class BusinessReports:
     def __init__(self, api_key: str) -> None:
         self.client = DartClient(api_key)
@@ -105,8 +138,13 @@ class BusinessReports:
 
         return tuple(DividendInfo.from_dart_resp(i) for i in resp.get("list", []) if i.get("thstrm") != "-")
 
-    def get_treasury_shares_status(self):
-        pass
+    def get_treasury_shares_status(
+        self, corporation_code: str, business_year: int, report_code: ReportCode
+    ) -> Tuple[TreasurySharesStatus]:
+        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_code.value}
+        resp = self.client.json("tesstkAcqsDspsSttus", **params)
+
+        return tuple(TreasurySharesStatus.from_dart_resp(i) for i in resp.get("list", []) if i.get("trmend_qy") != "-")
 
     def get_major_shareholders_status(self):
         pass
