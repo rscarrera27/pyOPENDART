@@ -150,6 +150,31 @@ class MajorShareholder(BusinessReportItemBase):
         )
 
 
+@dataclass(frozen=True)
+class LargestShareholderChange(BusinessReportItemBase):
+    changed_at: date  # change_on
+    largest_shareholder_name: str  # mxmm_shrholdr_nm
+    quantity: int  # posesn_stock_co
+    shareholding_ratio: float  # qota_rt
+    cause: str  # change_cause
+    remarks: str  # rm
+
+    @staticmethod
+    def from_dart_resp(resp):
+        return LargestShareholderChange(
+            receipt_no=resp.get("rcept_no"),
+            market=Market(resp.get("corp_cls")),
+            corporation_code=resp.get("corp_code"),
+            corporation_name=resp.get("corp_name"),
+            changed_at=datetime.strptime(resp.get("change_on"), "%Y년 %m월 %d일").date(),
+            largest_shareholder_name=resp.get("mxmm_shrholdr_nm"),
+            quantity=dart_atoi(resp.get("posesn_stock_co")),
+            shareholding_ratio=dart_atoi(resp.get("qota_rt").replace("%", "")),
+            cause=resp.get("change_cause"),
+            remarks=resp.get("rm"),
+        )
+
+
 class BusinessReports:
     def __init__(self, api_key: str) -> None:
         self.client = DartClient(api_key)
@@ -193,8 +218,15 @@ class BusinessReports:
             MajorShareholder.from_dart_resp(i) for i in resp.get("list", []) if i.get("trmend_posesn_stock_co") != "-"
         )
 
-    def get_changes_in_major_shareholders(self):
-        pass
+    def get_largest_shareholder_changes(
+        self, corporation_code: str, business_year: int, report_code: ReportCode
+    ) -> Tuple[LargestShareholderChange]:
+        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_code.value}
+        resp = self.client.json("hyslrChgSttus", **params)
+
+        return tuple(
+            LargestShareholderChange.from_dart_resp(i) for i in resp.get("list", []) if i.get("change_on") != "-"
+        )
 
     def get_minority_shareholders_status(self):
         pass
