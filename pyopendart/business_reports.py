@@ -113,6 +113,43 @@ class TreasurySharesStatus(BusinessReportItemBase):
         )
 
 
+@dataclass(frozen=True)
+class MajorShareholder(BusinessReportItemBase):
+    name: str  # nm
+    relation: str  # relate
+    stock_type: str  # stock_knd
+
+    @dataclass(frozen=True)
+    class QuantityAndShareholdingRatio:
+        quantity: int
+        shareholding_ratio: float
+
+    term_start: QuantityAndShareholdingRatio  # bsis_posesn_stock_co, bsis_posesn_stock_qota_rt
+    term_end: QuantityAndShareholdingRatio  # trmend_posesn_stock_co, trmend_posesn_stock_qota_rt
+    remarks: str  # rm
+
+    @staticmethod
+    def from_dart_resp(resp):
+        return MajorShareholder(
+            receipt_no=resp.get("rcept_no"),
+            market=Market(resp.get("corp_cls")),
+            corporation_code=resp.get("corp_code"),
+            corporation_name=resp.get("corp_name"),
+            name=resp.get("nm"),
+            relation=resp.get("relate"),
+            stock_type=resp.get("stock_knd"),
+            term_start=MajorShareholder.QuantityAndShareholdingRatio(
+                quantity=dart_atoi(resp.get("bsis_posesn_stock_co")),
+                shareholding_ratio=dart_atoi(resp.get("bsis_posesn_stock_qota_rt")),
+            ),
+            term_end=MajorShareholder.QuantityAndShareholdingRatio(
+                quantity=dart_atoi(resp.get("trmend_posesn_stock_co")),
+                shareholding_ratio=dart_atoi(resp.get("trmend_posesn_stock_qota_rt")),
+            ),
+            remarks=resp.get("rm"),
+        )
+
+
 class BusinessReports:
     def __init__(self, api_key: str) -> None:
         self.client = DartClient(api_key)
@@ -146,8 +183,15 @@ class BusinessReports:
 
         return tuple(TreasurySharesStatus.from_dart_resp(i) for i in resp.get("list", []) if i.get("trmend_qy") != "-")
 
-    def get_major_shareholders_status(self):
-        pass
+    def get_major_shareholders_status(
+        self, corporation_code: str, business_year: int, report_code: ReportCode
+    ) -> Tuple[MajorShareholder]:
+        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_code.value}
+        resp = self.client.json("hyslrSttus", **params)
+
+        return tuple(
+            MajorShareholder.from_dart_resp(i) for i in resp.get("list", []) if i.get("trmend_posesn_stock_co") != "-"
+        )
 
     def get_changes_in_major_shareholders(self):
         pass
