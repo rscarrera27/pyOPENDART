@@ -84,11 +84,11 @@ class DividendInfo(BusinessReportItemBase):
 class TreasurySharesStatus(BusinessReportItemBase):
     stock_type: str  # stock_knd
     acquisition_methods: Tuple[str, str, str]  # acqs_mth1, acqs_mth2, acqs_mth3
-    base_quantity: Optional[int]  # bsis_qy
+    quantity_term_start: Optional[int]  # bsis_qy
     acquired: Optional[int]  # change_qy_acqs
     disposed: Optional[int]  # change_qy_dsps
     retired: Optional[int]  # change_qy_incnr
-    result: Optional[int]  # trmend_qy
+    quantity_term_end: Optional[int]  # trmend_qy
     remarks: str  # rm
 
     @staticmethod
@@ -104,11 +104,11 @@ class TreasurySharesStatus(BusinessReportItemBase):
                 resp.get("acqs_mth2"),
                 resp.get("acqs_mth3"),
             ),
-            base_quantity=dart_atoi(resp.get("bsis_qy")),
+            quantity_term_start=dart_atoi(resp.get("bsis_qy")),
             acquired=dart_atoi(resp.get("change_qy_acqs")),
             disposed=dart_atoi(resp.get("change_qy_dsps")),
             retired=dart_atoi(resp.get("change_qy_incnr")),
-            result=dart_atoi(resp.get("trmend_qy")),
+            quantity_term_end=dart_atoi(resp.get("trmend_qy")),
             remarks=resp.get("rm"),
         )
 
