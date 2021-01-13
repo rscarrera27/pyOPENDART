@@ -202,6 +202,45 @@ class MinorityShareholdersStatus(BusinessReportItemBase):
         )
 
 
+@dataclass(frozen=True)
+class Director(BusinessReportItemBase):
+    name: str  # nm
+    gender: str  # sexdstn
+    birth_year_month: str  # birth_ym
+    position: str  # ofcps
+    is_registered: bool  # rgist_exctv_at
+    is_full_time: bool  # fte_at
+    work_in_charge: str  # chrg_job
+    career_info: str  # main_career
+    relation_to_major_shareholder: Optional[str]  # mxmm_shrholdr_relate
+    tenure: str  # hffc_pd
+    tenure_end_date: Optional[date]  # tenure_end_on
+
+    @staticmethod
+    def from_dart_resp(resp):
+        return Director(
+            receipt_no=resp.get("rcept_no"),
+            market=Market(resp.get("corp_cls")),
+            corporation_code=resp.get("corp_code"),
+            corporation_name=resp.get("corp_name"),
+            name=resp.get("nm"),
+            gender=resp.get("sexdstn"),
+            birth_year_month=resp.get("birth_ym"),
+            position=resp.get("ofcps"),
+            is_registered=True if resp.get("rgist_exctv_at", "").startswith("등기") else False,
+            is_full_time=True if resp.get("fte_at", "").startswith("상근") else False,
+            work_in_charge=resp.get("chrg_job"),
+            career_info=resp.get("main_career"),
+            relation_to_major_shareholder=resp.get("mxmm_shrholdr_relate"),
+            tenure=resp.get("hffc_pd"),
+            tenure_end_date=(
+                datetime.strptime(resp.get("tenure_end_on"), "%Y년 %m월 %d일").date()
+                if resp.get("tenure_end_on") != "-"
+                else None
+            ),
+        )
+
+
 class BusinessReports:
     def __init__(self, api_key: str) -> None:
         self.client = DartClient(api_key)
@@ -263,8 +302,11 @@ class BusinessReports:
 
         return tuple(MinorityShareholdersStatus.from_dart_resp(i) for i in resp.get("list", []))
 
-    def get_directors(self):
-        pass
+    def get_directors(self, corporation_code: str, business_year: int, report_code: ReportCode) -> Tuple[Director]:
+        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_code.value}
+        resp = self.client.json("exctvSttus", **params)
+
+        return tuple(Director.from_dart_resp(i) for i in resp.get("list", []))
 
     def get_employee_status(self):
         pass
