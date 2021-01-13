@@ -175,6 +175,33 @@ class LargestShareholderChange(BusinessReportItemBase):
         )
 
 
+@dataclass(frozen=True)
+class MinorityShareholdersStatus(BusinessReportItemBase):
+    minority_shareholders_count: int  # shrholdr_co
+    total_shareholders_count: Optional[int]  # shrholdr_tot_co
+    minority_shareholders_ratio: float  # shrholdr_rate
+    minority_shares: int  # hold_stock_co
+    total_shares: Optional[int]  # stock_tot_co
+    minority_shares_ratio: float  # hold_stock_rate
+
+    @staticmethod
+    def from_dart_resp(resp):
+        return MinorityShareholdersStatus(
+            receipt_no=resp.get("rcept_no"),
+            market=Market(resp.get("corp_cls")),
+            corporation_code=resp.get("corp_code"),
+            corporation_name=resp.get("corp_name"),
+            minority_shareholders_count=dart_atoi(resp.get("shrholdr_co")),
+            total_shareholders_count=(
+                dart_atoi(resp.get("shrholdr_tot_co")) if resp.get("shrholdr_tot_co") != "-" else None
+            ),
+            minority_shares_ratio=dart_atoi(resp.get("shrholdr_rate").replace("%", "")),
+            minority_shares=dart_atoi(resp.get("hold_stock_co")),
+            total_shares=dart_atoi(resp.get("stock_tot_co")) if resp.get("stock_tot_co") != "-" else None,
+            minority_shareholders_ratio=dart_atoi(resp.get("hold_stock_rate").replace("%", "")),
+        )
+
+
 class BusinessReports:
     def __init__(self, api_key: str) -> None:
         self.client = DartClient(api_key)
@@ -228,8 +255,13 @@ class BusinessReports:
             LargestShareholderChange.from_dart_resp(i) for i in resp.get("list", []) if i.get("change_on") != "-"
         )
 
-    def get_minority_shareholders_status(self):
-        pass
+    def get_minority_shareholders_status(
+        self, corporation_code: str, business_year: int, report_code: ReportCode
+    ) -> Tuple[MinorityShareholdersStatus]:
+        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_code.value}
+        resp = self.client.json("mrhlSttus", **params)
+
+        return tuple(MinorityShareholdersStatus.from_dart_resp(i) for i in resp.get("list", []))
 
     def get_directors(self):
         pass
