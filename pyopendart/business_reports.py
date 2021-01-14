@@ -10,11 +10,12 @@ from pyopendart.client import DartClient
 from pyopendart.common import Market, is_dart_null
 
 
-class ReportCode(Enum):
+
+class ReportType(Enum):
     Q1 = 11013  # 1분기보고서
-    Q2 = 11012  # 반기보고서
+    SEMI_ANNUAL = 11012  # 반기보고서
     Q3 = 11014  # 3분기보고서
-    Q4 = 11011  # 사업보고서
+    ANNUAL = 11011  # 사업보고서
 
 
 def dart_atoi(a: str) -> Union[int, float]:
@@ -451,9 +452,9 @@ class BusinessReports:
         self.client = DartClient(api_key)
 
     def get_capital_variation(
-        self, corporation_code: str, business_year: int, report_code: ReportCode
+        self, corporation_code: str, business_year: int, report_type: ReportType
     ) -> Tuple[CapitalVariation]:
-        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_code.value}
+        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_type.value}
         resp = self.client.json("irdsSttus", **params)
 
         if not resp.get("list"):
@@ -464,25 +465,25 @@ class BusinessReports:
         return tuple(CapitalVariation.from_dart_resp(i) for i in resp.get("list", []))
 
     def get_dividend_info(
-        self, corporation_code: str, business_year: int, report_code: ReportCode
+        self, corporation_code: str, business_year: int, report_type: ReportType
     ) -> Tuple[DividendInfo]:
-        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_code.value}
+        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_type.value}
         resp = self.client.json("alotMatter", **params)
 
         return tuple(DividendInfo.from_dart_resp(i) for i in resp.get("list", []) if i.get("thstrm") != "-")
 
     def get_treasury_shares_status(
-        self, corporation_code: str, business_year: int, report_code: ReportCode
+        self, corporation_code: str, business_year: int, report_type: ReportType
     ) -> Tuple[TreasurySharesStatus]:
-        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_code.value}
+        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_type.value}
         resp = self.client.json("tesstkAcqsDspsSttus", **params)
 
         return tuple(TreasurySharesStatus.from_dart_resp(i) for i in resp.get("list", []) if i.get("trmend_qy") != "-")
 
     def get_major_shareholders_status(
-        self, corporation_code: str, business_year: int, report_code: ReportCode
+        self, corporation_code: str, business_year: int, report_type: ReportType
     ) -> Tuple[MajorShareholder]:
-        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_code.value}
+        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_type.value}
         resp = self.client.json("hyslrSttus", **params)
 
         return tuple(
@@ -490,9 +491,9 @@ class BusinessReports:
         )
 
     def get_largest_shareholder_changes(
-        self, corporation_code: str, business_year: int, report_code: ReportCode
+        self, corporation_code: str, business_year: int, report_type: ReportType
     ) -> Tuple[LargestShareholderChange]:
-        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_code.value}
+        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_type.value}
         resp = self.client.json("hyslrChgSttus", **params)
 
         return tuple(
@@ -500,55 +501,55 @@ class BusinessReports:
         )
 
     def get_minority_shareholders_status(
-        self, corporation_code: str, business_year: int, report_code: ReportCode
+        self, corporation_code: str, business_year: int, report_type: ReportType
     ) -> Tuple[MinorityShareholdersStatus]:
-        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_code.value}
+        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_type.value}
         resp = self.client.json("mrhlSttus", **params)
 
         return tuple(MinorityShareholdersStatus.from_dart_resp(i) for i in resp.get("list", []))
 
-    def get_directors(self, corporation_code: str, business_year: int, report_code: ReportCode) -> Tuple[Director]:
-        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_code.value}
+    def get_directors(self, corporation_code: str, business_year: int, report_type: ReportType) -> Tuple[Director]:
+        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_type.value}
         resp = self.client.json("exctvSttus", **params)
 
         return tuple(Director.from_dart_resp(i) for i in resp.get("list", []))
 
     def get_employee_status(
-        self, corporation_code: str, business_year: int, report_code: ReportCode
+        self, corporation_code: str, business_year: int, report_type: ReportType
     ) -> Tuple[EmployeeStatus]:
-        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_code.value}
+        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_type.value}
         resp = self.client.json("empSttus", **params)
 
         return tuple(EmployeeStatus.from_dart_resp(i) for i in resp.get("list", []))
 
     def get_individual_executive_compensation_status(
-        self, corporation_code: str, business_year: int, report_code: ReportCode
+        self, corporation_code: str, business_year: int, report_type: ReportType
     ) -> Tuple[IndividualExecutiveStatus]:
-        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_code.value}
+        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_type.value}
         resp = self.client.json("hmvAuditIndvdlBySttus", **params)
 
         return tuple(IndividualExecutiveStatus.from_dart_resp(i) for i in resp.get("list", []))
 
     def get_executive_compensation_status(
-        self, corporation_code: str, business_year: int, report_code: ReportCode
+        self, corporation_code: str, business_year: int, report_type: ReportType
     ) -> Tuple[ExecutiveCompensationStatus]:
-        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_code.value}
+        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_type.value}
         resp = self.client.json("hmvAuditAllSttus", **params)
 
         return tuple(ExecutiveCompensationStatus.from_dart_resp(i) for i in resp.get("list", []))
 
     def get_top_5_individual_executive_compensation(
-        self, corporation_code: str, business_year: int, report_code: ReportCode
+        self, corporation_code: str, business_year: int, report_type: ReportType
     ) -> Tuple[IndividualExecutiveStatus]:
-        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_code.value}
+        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_type.value}
         resp = self.client.json("indvdlByPay", **params)
 
         return tuple(IndividualExecutiveStatus.from_dart_resp(i) for i in resp.get("list", []))
 
     def get_investment_in_other_corporations(
-        self, corporation_code: str, business_year: int, report_code: ReportCode
+        self, corporation_code: str, business_year: int, report_type: ReportType
     ) -> Tuple[InvestmentInOtherCorporation]:
-        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_code.value}
+        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_type.value}
         resp = self.client.json("otrCprInvstmntSttus", **params)
 
         return tuple(InvestmentInOtherCorporation.from_dart_resp(i) for i in resp.get("list", []))
