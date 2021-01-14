@@ -104,11 +104,11 @@ class TreasurySharesStatus(BusinessReportItemBase):
                 resp.get("acqs_mth2"),
                 resp.get("acqs_mth3"),
             ),
-            quantity_term_start=dart_atoi(resp.get("bsis_qy")),
-            acquired=dart_atoi(resp.get("change_qy_acqs")),
-            disposed=dart_atoi(resp.get("change_qy_dsps")),
-            retired=dart_atoi(resp.get("change_qy_incnr")),
-            quantity_term_end=dart_atoi(resp.get("trmend_qy")),
+            quantity_term_start=dart_atoi(resp.get("bsis_qy")) if not is_dart_null(resp.get("bsis_qy")) else None,
+            acquired=dart_atoi(resp.get("change_qy_acqs")) if not is_dart_null(resp.get("change_qy_acqs")) else None,
+            disposed=dart_atoi(resp.get("change_qy_dsps")) if not is_dart_null(resp.get("change_qy_dsps")) else None,
+            retired=dart_atoi(resp.get("change_qy_incnr")) if not is_dart_null(resp.get("change_qy_incnr")) else None,
+            quantity_term_end=dart_atoi(resp.get("trmend_qy")) if not is_dart_null(resp.get("trmend_qy")) else None,
             remarks=resp.get("rm"),
         )
 
@@ -193,7 +193,7 @@ class MinorityShareholdersStatus(BusinessReportItemBase):
             corporation_name=resp.get("corp_name"),
             minority_shareholders_count=dart_atoi(resp.get("shrholdr_co")),
             total_shareholders_count=(
-                dart_atoi(resp.get("shrholdr_tot_co")) if resp.get("shrholdr_tot_co") != "-" else None
+                dart_atoi(resp.get("shrholdr_tot_co")) if not is_dart_null(resp.get("shrholdr_tot_co")) else None
             ),
             minority_shares_ratio=dart_atoi(resp.get("shrholdr_rate").replace("%", "")),
             minority_shares=dart_atoi(resp.get("hold_stock_co")),
@@ -278,33 +278,39 @@ class EmployeeStatus(BusinessReportItemBase):
             gender=resp.get("sexdstn"),
             legacy_employment_status=EmployeeStatus.LegacyEmploymentStatus(
                 full_time=dart_atoi(resp.get("reform_bfe_emp_co_rgllbr"))
-                if resp.get("reform_bfe_emp_co_rgllbr") != "-"
+                if not is_dart_null(resp.get("reform_bfe_emp_co_rgllbr"))
                 else None,
                 contract=dart_atoi(resp.get("reform_bfe_emp_co_cnttk"))
-                if resp.get("reform_bfe_emp_co_cnttk") != "-"
+                if not is_dart_null(resp.get("reform_bfe_emp_co_cnttk"))
                 else None,
                 other=dart_atoi(resp.get("reform_bfe_emp_co_etc"))
-                if resp.get("reform_bfe_emp_co_etc") != "-"
+                if not is_dart_null(resp.get("reform_bfe_emp_co_etc"))
                 else None,
             ),
             full_time=EmployeeStatus.EmploymentStatus(
                 total=dart_atoi(resp.get("rgllbr_co")),
                 part_time=(
-                    dart_atoi(resp.get("rgllbr_abacpt_labrr_co")) if resp.get("rgllbr_abacpt_labrr_co") != "-" else None
+                    dart_atoi(resp.get("rgllbr_abacpt_labrr_co"))
+                    if not is_dart_null(resp.get("rgllbr_abacpt_labrr_co"))
+                    else None
                 ),
             ),
             contract=EmployeeStatus.EmploymentStatus(
                 total=dart_atoi(resp.get("cnttk_co")),
                 part_time=(
-                    dart_atoi(resp.get("cnttk_abacpt_labrr_co")) if resp.get("cnttk_abacpt_labrr_co") != "-" else None
+                    dart_atoi(resp.get("cnttk_abacpt_labrr_co"))
+                    if not is_dart_null(resp.get("cnttk_abacpt_labrr_co"))
+                    else None
                 ),
             ),
             total=dart_atoi(resp.get("sm")),
             average_years_of_employment=dart_atoi(resp.get("avrg_cnwk_sdytrn")),
             total_annual_salary=(
-                dart_atoi(resp.get("fyer_salary_totamt")) if resp.get("fyer_salary_totamt") != "-" else None
+                dart_atoi(resp.get("fyer_salary_totamt")) if not is_dart_null(resp.get("fyer_salary_totamt")) else None
             ),
-            average_annual_salary=dart_atoi(resp.get("jan_salary_am")) if resp.get("jan_salary_am") != "-" else None,
+            average_annual_salary=(
+                dart_atoi(resp.get("jan_salary_am")) if not is_dart_null(resp.get("jan_salary_am")) else None
+            ),
             remarks=resp.get("rm"),
         )
 
@@ -327,7 +333,7 @@ class IndividualExecutiveStatus(BusinessReportItemBase):
             position=resp.get("ofcps"),
             total=dart_atoi(resp.get("mendng_totamt")),
             compensation_not_included_in_total=dart_atoi(resp.get("mendng_totamt_ct_incls_mendng"))
-            if resp.get("mendng_totamt_ct_incls_mendng") not in ("-", "\u3000-")
+            if not is_dart_null(resp.get("mendng_totamt_ct_incls_mendng"))
             else None,
         )
 
