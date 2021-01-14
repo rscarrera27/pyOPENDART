@@ -7,7 +7,7 @@ from typing import Optional, Tuple, Union
 from dateutil.parser import parse as datetime_parse
 
 from pyopendart.client import DartClient
-from pyopendart.common import Market
+from pyopendart.common import Market, is_dart_null
 
 
 class ReportCode(Enum):
@@ -353,6 +353,93 @@ class ExecutiveCompensationStatus(BusinessReportItemBase):
         )
 
 
+@dataclass(frozen=True)
+class InvestmentInOtherCorporation(BusinessReportItemBase):
+    invested_corporation_name: str  # inv_prm
+    first_acquisition_date: Optional[date]  # frst_acqs_de
+    purpose: str  # invstmnt_purps
+    first_acquired_amount: Optional[int]  # frst_acqs_amount
+
+    @dataclass(frozen=True)
+    class InvestmentStatus:
+        quantity: Optional[int]  # bsis_blce_qy, trmend_blce_qy
+        shares_ratio: Optional[float]  # bsis_blce_qota_rt, trmend_blce_qota_rt
+        book_value: Optional[int]  # bsis_blce_acntbk_amount, trmend_blce_acntbk_amount
+
+    @dataclass(frozen=True)
+    class InvestmentVariation:
+        quantity: Optional[int]  # incrs_dcrs_acqs_dsps_qy
+        amount: Optional[int]  # incrs_dcrs_acqs_dsps_amount
+        profit_or_loss: Optional[int]  # incrs_dcrs_evl_lstmn
+
+    term_start: InvestmentStatus
+    variation: InvestmentVariation
+    term_end: InvestmentStatus
+
+    @dataclass(frozen=True)
+    class FinancialStatus:
+        asset_total: Optional[int]  # recent_bsns_year_fnnr_sttus_tot_assets
+        net_income: Optional[int]  # recent_bsns_year_fnnr_sttus_thstrm_ntpf
+
+    last_recent_business_year_financial_status: FinancialStatus
+
+    @staticmethod
+    def from_dart_resp(resp):
+        return InvestmentInOtherCorporation(
+            receipt_no=resp.get("rcept_no"),
+            market=Market(resp.get("corp_cls")),
+            corporation_code=resp.get("corp_code"),
+            corporation_name=resp.get("corp_name"),
+            invested_corporation_name=resp.get("inv_prm"),
+            first_acquisition_date=datetime_parse(resp.get("frst_acqs_de"))
+            if not is_dart_null(resp.get("frst_acqs_de"))
+            else None,
+            purpose=resp.get("invstmnt_purps"),
+            first_acquired_amount=dart_atoi(resp.get("frst_acqs_amount"))
+            if not is_dart_null(resp.get("frst_acqs_amount"))
+            else None,
+            term_start=InvestmentInOtherCorporation.InvestmentStatus(
+                quantity=dart_atoi(resp.get("bsis_blce_qy")) if not is_dart_null(resp.get("bsis_blce_qy")) else None,
+                shares_ratio=dart_atoi(resp.get("bsis_blce_qota_rt"))
+                if not is_dart_null(resp.get("bsis_blce_qota_rt"))
+                else None,
+                book_value=dart_atoi(resp.get("bsis_blce_acntbk_amount"))
+                if not is_dart_null(resp.get("bsis_blce_acntbk_amount"))
+                else None,
+            ),
+            variation=InvestmentInOtherCorporation.InvestmentVariation(
+                quantity=dart_atoi(resp.get("incrs_dcrs_acqs_dsps_qy"))
+                if not is_dart_null(resp.get("incrs_dcrs_acqs_dsps_qy"))
+                else None,
+                amount=dart_atoi(resp.get("incrs_dcrs_acqs_dsps_amount"))
+                if not is_dart_null(resp.get("incrs_dcrs_acqs_dsps_amount"))
+                else None,
+                profit_or_loss=dart_atoi(resp.get("incrs_dcrs_evl_lstmn"))
+                if not is_dart_null(resp.get("incrs_dcrs_evl_lstmn"))
+                else None,
+            ),
+            term_end=InvestmentInOtherCorporation.InvestmentStatus(
+                quantity=dart_atoi(resp.get("trmend_blce_qy"))
+                if not is_dart_null(resp.get("trmend_blce_qy"))
+                else None,
+                shares_ratio=dart_atoi(resp.get("trmend_blce_qota_rt"))
+                if not is_dart_null(resp.get("trmend_blce_qota_rt"))
+                else None,
+                book_value=dart_atoi(resp.get("trmend_blce_acntbk_amount"))
+                if not is_dart_null(resp.get("trmend_blce_acntbk_amount"))
+                else None,
+            ),
+            last_recent_business_year_financial_status=InvestmentInOtherCorporation.FinancialStatus(
+                asset_total=dart_atoi(resp.get("recent_bsns_year_fnnr_sttus_tot_assets"))
+                if not is_dart_null(resp.get("recent_bsns_year_fnnr_sttus_tot_assets"))
+                else None,
+                net_income=dart_atoi(resp.get("recent_bsns_year_fnnr_sttus_thstrm_ntpf"))
+                if not is_dart_null(resp.get("recent_bsns_year_fnnr_sttus_thstrm_ntpf"))
+                else None,
+            ),
+        )
+
+
 class BusinessReports:
     def __init__(self, api_key: str) -> None:
         self.client = DartClient(api_key)
@@ -452,5 +539,10 @@ class BusinessReports:
 
         return tuple(IndividualExecutiveStatus.from_dart_resp(i) for i in resp.get("list", []))
 
-    def get_investment_in_other_corporations(self):
-        pass
+    def get_investment_in_other_corporations(
+        self, corporation_code: str, business_year: int, report_code: ReportCode
+    ) -> Tuple[InvestmentInOtherCorporation]:
+        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_code.value}
+        resp = self.client.json("otrCprInvstmntSttus", **params)
+
+        return tuple(InvestmentInOtherCorporation.from_dart_resp(i) for i in resp.get("list", []))

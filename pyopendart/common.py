@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import date
 from enum import Enum
+from typing import Optional
 
 
 @dataclass
@@ -33,3 +34,15 @@ class Market(Enum):
 
     def __missing__(self, key):
         return None
+
+
+def is_dart_null(v: Optional[str]) -> bool:
+    _know_dart_null = ("-", "\u3000-")
+
+    if v is None:
+        return True
+
+    if v in _know_dart_null:
+        return True
+
+    return False
