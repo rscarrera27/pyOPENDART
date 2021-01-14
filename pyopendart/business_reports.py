@@ -327,7 +327,7 @@ class IndividualExecutiveStatus(BusinessReportItemBase):
             position=resp.get("ofcps"),
             total=dart_atoi(resp.get("mendng_totamt")),
             compensation_not_included_in_total=dart_atoi(resp.get("mendng_totamt_ct_incls_mendng"))
-            if resp.get("mendng_totamt_ct_incls_mendng") != "-"
+            if resp.get("mendng_totamt_ct_incls_mendng") not in ("-", "\u3000-")
             else None,
         )
 
@@ -444,8 +444,13 @@ class BusinessReports:
 
         return tuple(ExecutiveCompensationStatus.from_dart_resp(i) for i in resp.get("list", []))
 
-    def get_top_5_individual_executive_compensation(self):
-        pass
+    def get_top_5_individual_executive_compensation(
+        self, corporation_code: str, business_year: int, report_code: ReportCode
+    ) -> Tuple[IndividualExecutiveStatus]:
+        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_code.value}
+        resp = self.client.json("indvdlByPay", **params)
+
+        return tuple(IndividualExecutiveStatus.from_dart_resp(i) for i in resp.get("list", []))
 
     def get_investment_in_other_corporations(self):
         pass
