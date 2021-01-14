@@ -332,6 +332,27 @@ class IndividualExecutiveStatus(BusinessReportItemBase):
         )
 
 
+@dataclass(frozen=True)
+class ExecutiveCompensationStatus(BusinessReportItemBase):
+    headcount: int  # nmpr
+    total: int  # mendng_totamt
+    average: int  # jan_avrg_mendng_am
+    remarks: str  # rm
+
+    @staticmethod
+    def from_dart_resp(resp):
+        return ExecutiveCompensationStatus(
+            receipt_no=resp.get("rcept_no"),
+            market=Market(resp.get("corp_cls")),
+            corporation_code=resp.get("corp_code"),
+            corporation_name=resp.get("corp_name"),
+            headcount=dart_atoi(resp.get("nmpr")),
+            total=dart_atoi(resp.get("mendng_totamt")),
+            average=dart_atoi(resp.get("jan_avrg_mendng_am")),
+            remarks=resp.get("rm"),
+        )
+
+
 class BusinessReports:
     def __init__(self, api_key: str) -> None:
         self.client = DartClient(api_key)
@@ -415,8 +436,13 @@ class BusinessReports:
 
         return tuple(IndividualExecutiveStatus.from_dart_resp(i) for i in resp.get("list", []))
 
-    def get_executive_compensation_status(self):
-        pass
+    def get_executive_compensation_status(
+        self, corporation_code: str, business_year: int, report_code: ReportCode
+    ) -> Tuple[ExecutiveCompensationStatus]:
+        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_code.value}
+        resp = self.client.json("hmvAuditAllSttus", **params)
+
+        return tuple(ExecutiveCompensationStatus.from_dart_resp(i) for i in resp.get("list", []))
 
     def get_top_5_individual_executive_compensation(self):
         pass
