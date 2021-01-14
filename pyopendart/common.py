@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import date
 from enum import Enum
-from typing import Optional
+from typing import Optional, Union
 
 
 @dataclass
@@ -46,3 +46,10 @@ def is_dart_null(v: Optional[str]) -> bool:
         return True
 
     return False
+
+
+def dart_atoi(a: str) -> Union[int, float]:
+    try:
+        return int(a.replace(",", ""))
+    except ValueError:
+        return float(a.replace(",", ""))

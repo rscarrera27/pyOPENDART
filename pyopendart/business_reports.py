@@ -1,4 +1,3 @@
-import locale
 from dataclasses import dataclass
 from datetime import date
 from enum import Enum
@@ -7,7 +6,7 @@ from typing import Optional, Tuple, Union
 from dateutil.parser import parse as datetime_parse
 
 from pyopendart.client import DartClient
-from pyopendart.common import Market, is_dart_null
+from pyopendart.common import Market, dart_atoi, is_dart_null
 
 
 
@@ -16,13 +15,6 @@ class ReportType(Enum):
     SEMI_ANNUAL = 11012  # 반기보고서
     Q3 = 11014  # 3분기보고서
     ANNUAL = 11011  # 사업보고서
-
-
-def dart_atoi(a: str) -> Union[int, float]:
-    try:
-        return int(a.replace(",", ""))
-    except ValueError:
-        return float(a.replace(",", ""))
 
 
 @dataclass(frozen=True)
