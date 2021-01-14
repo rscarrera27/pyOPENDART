@@ -241,6 +241,74 @@ class Director(BusinessReportItemBase):
         )
 
 
+@dataclass(frozen=True)
+class EmployeeStatus(BusinessReportItemBase):
+    division: str  # fo_bbm
+    gender: str  # sexdstn
+
+    @dataclass(frozen=True)
+    class LegacyEmploymentStatus:
+        full_time: Optional[int]  # reform_bfe_emp_co_rgllbr
+        contract: Optional[int]  # reform_bfe_emp_co_cnttk
+        other: Optional[int]  # reform_bfe_emp_co_etc
+
+    legacy_employment_status: LegacyEmploymentStatus
+
+    @dataclass(frozen=True)
+    class EmploymentStatus:
+        total: int  # rgllbr_co, cnttk_co
+        part_time: Optional[int]  # rgllbr_abacpt_labrr_co, cnttk_abacpt_labrr_co
+
+    full_time: EmploymentStatus
+    contract: EmploymentStatus
+    total: int  # sm
+    average_years_of_employment: float  # avrg_cnwk_sdytrn
+    total_annual_salary: Optional[int]  # fyer_salary_totamt
+    average_annual_salary: Optional[int]  # jan_salary_am
+    remarks: str  # rm
+
+    @staticmethod
+    def from_dart_resp(resp):
+        return EmployeeStatus(
+            receipt_no=resp.get("rcept_no"),
+            market=Market(resp.get("corp_cls")),
+            corporation_code=resp.get("corp_code"),
+            corporation_name=resp.get("corp_name"),
+            division=resp.get("fo_bbm"),
+            gender=resp.get("sexdstn"),
+            legacy_employment_status=EmployeeStatus.LegacyEmploymentStatus(
+                full_time=dart_atoi(resp.get("reform_bfe_emp_co_rgllbr"))
+                if resp.get("reform_bfe_emp_co_rgllbr") != "-"
+                else None,
+                contract=dart_atoi(resp.get("reform_bfe_emp_co_cnttk"))
+                if resp.get("reform_bfe_emp_co_cnttk") != "-"
+                else None,
+                other=dart_atoi(resp.get("reform_bfe_emp_co_etc"))
+                if resp.get("reform_bfe_emp_co_etc") != "-"
+                else None,
+            ),
+            full_time=EmployeeStatus.EmploymentStatus(
+                total=dart_atoi(resp.get("rgllbr_co")),
+                part_time=(
+                    dart_atoi(resp.get("rgllbr_abacpt_labrr_co")) if resp.get("rgllbr_abacpt_labrr_co") != "-" else None
+                ),
+            ),
+            contract=EmployeeStatus.EmploymentStatus(
+                total=dart_atoi(resp.get("cnttk_co")),
+                part_time=(
+                    dart_atoi(resp.get("cnttk_abacpt_labrr_co")) if resp.get("cnttk_abacpt_labrr_co") != "-" else None
+                ),
+            ),
+            total=dart_atoi(resp.get("sm")),
+            average_years_of_employment=dart_atoi(resp.get("avrg_cnwk_sdytrn")),
+            total_annual_salary=(
+                dart_atoi(resp.get("fyer_salary_totamt")) if resp.get("fyer_salary_totamt") != "-" else None
+            ),
+            average_annual_salary=dart_atoi(resp.get("jan_salary_am")) if resp.get("jan_salary_am") != "-" else None,
+            remarks=resp.get("rm"),
+        )
+
+
 class BusinessReports:
     def __init__(self, api_key: str) -> None:
         self.client = DartClient(api_key)
@@ -308,8 +376,13 @@ class BusinessReports:
 
         return tuple(Director.from_dart_resp(i) for i in resp.get("list", []))
 
-    def get_employee_status(self):
-        pass
+    def get_employee_status(
+        self, corporation_code: str, business_year: int, report_code: ReportCode
+    ) -> Tuple[EmployeeStatus]:
+        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_code.value}
+        resp = self.client.json("empSttus", **params)
+
+        return tuple(EmployeeStatus.from_dart_resp(i) for i in resp.get("list", []))
 
     def get_individual_executive_compensation_status(self):
         pass
