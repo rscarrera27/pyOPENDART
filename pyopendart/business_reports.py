@@ -309,6 +309,29 @@ class EmployeeStatus(BusinessReportItemBase):
         )
 
 
+@dataclass(frozen=True)
+class IndividualExecutiveStatus(BusinessReportItemBase):
+    name: str  # nm
+    position: str  # ofcps
+    total: int  # mendng_totamt
+    compensation_not_included_in_total: Optional[int]  # mendng_totamt_ct_incls_mendng
+
+    @staticmethod
+    def from_dart_resp(resp):
+        return IndividualExecutiveStatus(
+            receipt_no=resp.get("rcept_no"),
+            market=Market(resp.get("corp_cls")),
+            corporation_code=resp.get("corp_code"),
+            corporation_name=resp.get("corp_name"),
+            name=resp.get("nm"),
+            position=resp.get("ofcps"),
+            total=dart_atoi(resp.get("mendng_totamt")),
+            compensation_not_included_in_total=dart_atoi(resp.get("mendng_totamt_ct_incls_mendng"))
+            if resp.get("mendng_totamt_ct_incls_mendng") != "-"
+            else None,
+        )
+
+
 class BusinessReports:
     def __init__(self, api_key: str) -> None:
         self.client = DartClient(api_key)
@@ -384,8 +407,13 @@ class BusinessReports:
 
         return tuple(EmployeeStatus.from_dart_resp(i) for i in resp.get("list", []))
 
-    def get_individual_executive_compensation_status(self):
-        pass
+    def get_individual_executive_compensation_status(
+        self, corporation_code: str, business_year: int, report_code: ReportCode
+    ) -> Tuple[IndividualExecutiveStatus]:
+        params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_code.value}
+        resp = self.client.json("hmvAuditIndvdlBySttus", **params)
+
+        return tuple(IndividualExecutiveStatus.from_dart_resp(i) for i in resp.get("list", []))
 
     def get_executive_compensation_status(self):
         pass
