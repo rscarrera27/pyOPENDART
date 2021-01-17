@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import date, datetime
 from enum import Enum
 from typing import Dict, Optional, Sequence, Tuple
 
@@ -115,6 +116,38 @@ class DetailedAccount(Account):
         )
 
 
+@dataclass(frozen=True)
+class XbrlTaxonomy:
+    id: str  # account_id
+    title: str  # account_nm
+    base_date: date  # bsns_de
+    detailed_financial_statement_type: str  # sj_div
+
+    @dataclass(frozen=True)
+    class Label:
+        ko: str  # label_kor
+        en: str  # label_eng
+
+    label: Label
+    format: Optional[str]  # data_tp
+    ifrs_ref: str  # ifrs_ref
+
+    @staticmethod
+    def from_dart_resp(resp):
+        return XbrlTaxonomy(
+            id=resp.get("account_id"),
+            title=resp.get("account_nm"),
+            base_date=datetime.strptime(resp.get("bsns_de"), "%Y%m%d").date(),
+            detailed_financial_statement_type=resp.get("sj_div"),
+            label=XbrlTaxonomy.Label(
+                ko=resp.get("label_kor"),
+                en=resp.get("label_eng"),
+            ),
+            format=resp.get("data_tp"),
+            ifrs_ref=resp.get("ifrs_ref"),
+        )
+
+
 class FinancialInformation:
     def __init__(self, api_key: str) -> None:
         self.client = DartClient(api_key)
@@ -168,4 +201,8 @@ class FinancialInformation:
 
         return tuple(DetailedAccount.from_dart_resp(i) for i in resp.get("list", []))
 
+    def get_xbrl_taxonomies(self, detailed_financial_statement_type: str) -> Tuple[XbrlTaxonomy]:
+        params = {"sj_div": detailed_financial_statement_type}
+        resp = self.client.json("xbrlTaxonomy", **params)
 
+        return tuple(XbrlTaxonomy.from_dart_resp(i) for i in resp.get("list", []))
