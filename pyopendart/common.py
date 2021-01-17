@@ -53,3 +53,10 @@ def dart_atoi(a: str) -> Union[int, float]:
         return int(a.replace(",", ""))
     except ValueError:
         return float(a.replace(",", ""))
+
+
+class ReportType(Enum):
+    Q1 = 11013  # 1분기보고서
+    SEMI_ANNUAL = 11012  # 반기보고서
+    Q3 = 11014  # 3분기보고서
+    ANNUAL = 11011  # 사업보고서
