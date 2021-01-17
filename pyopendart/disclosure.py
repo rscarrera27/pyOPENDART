@@ -43,7 +43,7 @@ class SearchResult:
     class ResultItem:
         corporation_code: str
         corporation_name: str
-        stock_code: str
+        ticker: str
         market: Market
         report_name: str
         receipt_no: str
@@ -56,7 +56,7 @@ class SearchResult:
             return SearchResult.ResultItem(
                 corporation_code=resp.get("corp_code"),
                 corporation_name=resp.get("corp_name"),
-                stock_code=resp.get("stock_code"),
+                ticker=resp.get("stock_code"),
                 market=Market(resp.get("corp_cls")),
                 report_name=resp.get("report_nm"),
                 receipt_no=resp.get("rcept_no"),
