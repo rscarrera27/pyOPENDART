@@ -37,7 +37,7 @@ class Market(Enum):
 
 
 def is_dart_null(v: Optional[str]) -> bool:
-    _know_dart_null = ("-", "\u3000-")
+    _know_dart_null = ("-", "\u3000-", "")
 
     if v is None:
         return True

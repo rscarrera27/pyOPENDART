@@ -1,14 +1,17 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, Sequence, Tuple
+from typing import Dict, Optional, Sequence, Tuple
 
 from pyopendart.client import DartClient
-from pyopendart.common import ReportType, dart_atoi
+from pyopendart.common import ReportType, dart_atoi, is_dart_null
 
 
 class FinancialStatementType(Enum):
     INCOME_STATEMENT = "IS"
     BALANCE_SHEET = "BS"
+    COMPREHENSIVE_INCOME_STATEMENT = "CIS"
+    CASH_FLOW = "CF"
+    EQUITY_CHANGE_STATEMENT = "SCE"
 
 
 @dataclass(frozen=True)
@@ -65,6 +68,53 @@ class Account:
         )
 
 
+@dataclass(frozen=True)
+class DetailedAccount(Account):
+    id: str
+    detail: str
+
+    @dataclass(frozen=True)
+    class TermData:
+        name: str
+        date: str
+        amount: Optional[int]
+
+    current_term: TermData
+    prev_term: TermData
+    prev_prev_term: TermData
+
+    @staticmethod
+    def from_dart_resp(resp):
+        return DetailedAccount(
+            receipt_no=resp.get("rcept_no"),
+            business_year=int(resp.get("bsns_year")),
+            corporation_code=resp.get("corp_code"),
+            ticker=resp.get("stock_code"),
+            report_type=ReportType(int(resp.get("reprt_code"))),
+            id=resp.get("account_id"),
+            title=resp.get("account_nm"),
+            detail=resp.get("account_detail"),
+            is_consolidated=True if resp.get("fs_div") == "CFS" else False,
+            financial_statement_type=FinancialStatementType(resp.get("sj_div")),
+            current_term=DetailedAccount.TermData(
+                name=resp.get("thstrm_nm"),
+                date=resp.get("thstrm_dt"),
+                amount=dart_atoi(resp["thstrm_amount"]) if not is_dart_null(resp.get("thstrm_amount")) else None,
+            ),
+            prev_term=DetailedAccount.TermData(
+                name=resp.get("frmtrm_nm"),
+                date=resp.get("frmtrm_dt"),
+                amount=dart_atoi(resp["frmtrm_amount"]) if not is_dart_null(resp.get("frmtrm_amount")) else None,
+            ),
+            prev_prev_term=DetailedAccount.TermData(
+                name=resp.get("bfefrmtrm_nm"),
+                date=resp.get("bfefrmtrm_dt"),
+                amount=dart_atoi(resp["bfefrmtrm_amount"]) if not is_dart_null(resp.get("bfefrmtrm_amount")) else None,
+            ),
+            order=dart_atoi(resp.get("ord")),
+        )
+
+
 class FinancialInformation:
     def __init__(self, api_key: str) -> None:
         self.client = DartClient(api_key)
@@ -105,5 +155,17 @@ class FinancialInformation:
 
             return grouped_accounts
 
-    def get_all_financial_statements(self):
-        pass
+    def get_full_financial_statements(
+        self, corporation_code: str, business_year: int, report_type: ReportType, is_consolidated: bool = True
+    ) -> Tuple[DetailedAccount]:
+        params = {
+            "corp_code": corporation_code,
+            "bsns_year": str(business_year),
+            "reprt_code": report_type.value,
+            "fs_div": "CFS" if is_consolidated else "OFS",
+        }
+        resp = self.client.json("fnlttSinglAcntAll", **params)
+
+        return tuple(DetailedAccount.from_dart_resp(i) for i in resp.get("list", []))
+
+
