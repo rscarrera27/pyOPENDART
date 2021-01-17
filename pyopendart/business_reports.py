@@ -17,7 +17,7 @@ class BusinessReportItemBase:
 
 
 @dataclass(frozen=True)
-class CapitalVariation(BusinessReportItemBase):
+class ChangeInEquity(BusinessReportItemBase):
     date: date  # stock_isu_dcrs_de
     title: str  # isu_dcrs_stle
     stock_type: str  # isu_dcrs_stock_knd
@@ -27,7 +27,7 @@ class CapitalVariation(BusinessReportItemBase):
 
     @staticmethod
     def from_dart_resp(resp):
-        return CapitalVariation(
+        return ChangeInEquity(
             receipt_no=resp.get("rcept_no"),
             market=Market(resp.get("corp_cls")),
             corporation_code=resp.get("corp_code"),
@@ -434,9 +434,9 @@ class BusinessReports:
     def __init__(self, api_key: str) -> None:
         self.client = DartClient(api_key)
 
-    def get_capital_variation(
+    def get_changes_in_equity(
         self, corporation_code: str, business_year: int, report_type: ReportType
-    ) -> Tuple[CapitalVariation]:
+    ) -> Tuple[ChangeInEquity]:
         params = {"corp_code": corporation_code, "bsns_year": str(business_year), "reprt_code": report_type.value}
         resp = self.client.json("irdsSttus", **params)
 
@@ -445,7 +445,7 @@ class BusinessReports:
         if len(resp.get("list")) == 1 and resp["list"][0].get("isu_dcrs_qy") == "-":
             return tuple()
 
-        return tuple(CapitalVariation.from_dart_resp(i) for i in resp.get("list", []))
+        return tuple(ChangeInEquity.from_dart_resp(i) for i in resp.get("list", []))
 
     def get_dividend_info(
         self, corporation_code: str, business_year: int, report_type: ReportType
