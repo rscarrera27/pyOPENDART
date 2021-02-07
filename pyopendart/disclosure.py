@@ -1,8 +1,10 @@
+from collections import namedtuple
 from dataclasses import dataclass
 from datetime import date
 from enum import Enum
-from typing import Optional, Tuple
+from typing import Optional
 
+import pandas as pd
 from dateutil.parser import parse as datetime_parse
 
 from pyopendart.client import DartClient
@@ -33,96 +35,33 @@ class Pagination:
         return {"page_no": str(self.page_no), "page_count": str(self.items_per_page)}
 
 
-@dataclass(frozen=True)
-class SearchResult:
-    current_page: Pagination
-    total_page: int
-    total_count: int
+SearchResultItem = namedtuple(
+    "SearchResultItem",
+    ["corp_code", "corp_name", "stock_code", "corp_cls", "report_nm", "rcept_no", "flr_nm", "rcept_dt", "rm"],
+)
 
-    @dataclass(frozen=True)
-    class ResultItem:
-        corporation_code: str
-        corporation_name: str
-        ticker: str
-        market: Market
-        report_name: str
-        receipt_no: str
-        filler_name: str
-        receipt_date: date
-        remarks: str
-
-        @staticmethod
-        def from_dart_resp(resp):
-            return SearchResult.ResultItem(
-                corporation_code=resp.get("corp_code"),
-                corporation_name=resp.get("corp_name"),
-                ticker=resp.get("stock_code"),
-                market=Market(resp.get("corp_cls")),
-                report_name=resp.get("report_nm"),
-                receipt_no=resp.get("rcept_no"),
-                filler_name=resp.get("flr_nm"),
-                receipt_date=datetime_parse(resp.get("rcept_dt")).date(),
-                remarks=resp.get("rm"),
-            )
-
-    items: Tuple[ResultItem]
-
-    @staticmethod
-    def from_dart_resp(resp: dict) -> "SearchResult":
-
-        return SearchResult(
-            current_page=Pagination(page_no=resp.get("page_no"), items_per_page=resp.get("page_count")),
-            total_page=resp.get("total_page"),
-            total_count=resp.get("total_count"),
-            items=tuple(SearchResult.ResultItem.from_dart_resp(i) for i in resp.get("list", [])),
-        )
-
-
-@dataclass(frozen=True)
-class CompanyOverview:
-    @dataclass(frozen=True)
-    class Name:
-        kor: str
-        eng: str
-        stock: str
-
-    name: Name  # corp_name, corp_name_eng, stock_name
-    ticker: str  # stock_code
-    ceo_name: str  # ceo_nm
-    market: Market  # corp_cls
-    corporation_registration_number: str  # jurir_no
-    business_registration_number: str  # bizr_no
-    address: str  # adres
-    homepage_url: str  # hm_url
-    ir_url: str  # ir_url
-    phone_number: str  # phn_no
-    fax_number: str  # fax_no
-    industry_code: str  # induty_code
-    established_date: date  # est_dt
-    accounting_month: int  # acc_mt
-
-    @staticmethod
-    def from_dart_resp(resp):
-        return CompanyOverview(
-            name=CompanyOverview.Name(
-                kor=resp.get("corp_name"),
-                eng=resp.get("corp_name_eng"),
-                stock=resp.get("stock_name"),
-            ),
-            ticker=resp.get("stock_code"),
-            ceo_name=resp.get("ceo_nm"),
-            market=Market(resp.get("corp_cls")),
-            corporation_registration_number=resp.get("jurir_no"),
-            business_registration_number=resp.get("bizr_no"),
-            address=resp.get("adres"),
-            homepage_url=resp.get("hm_url"),
-            ir_url=resp.get("ir_url"),
-            phone_number=resp.get("phn_no"),
-            fax_number=resp.get("fax_no"),
-            industry_code=resp.get("induty_code"),
-            established_date=datetime_parse(resp.get("est_dt")).date(),
-            accounting_month=int(resp.get("acc_mt")),
-        )
+CompanyOverview = namedtuple(
+    "CompanyOverview",
+    [
+        'corp_code',
+        'corp_name',
+        'corp_name_eng',
+        'stock_name',
+        'stock_code',
+        'ceo_nm',
+        'corp_cls',
+        'jurir_no',
+        'bizr_no',
+        'adres',
+        'hm_url',
+        'ir_url',
+        'phn_no',
+        'fax_no',
+        'induty_code',
+        'est_dt',
+        'acc_mt',
+    ],
+)
 
 
 class Disclosure:
@@ -139,7 +78,7 @@ class Disclosure:
         market: Optional[Market] = None,  # corp_cls
         sort: Optional[Sort] = None,  # sort, sort_mth
         pagination: Optional[Pagination] = None,
-    ) -> SearchResult:
+    ) -> pd.DataFrame:
         params = {
             "corp_code": corporation_code if corporation_code else None,
             "last_reprt_at": {True: "Y", False: "N"}.get(only_last_report),
@@ -154,11 +93,56 @@ class Disclosure:
 
         resp = self.client.json("list", **params)
 
-        return SearchResult.from_dart_resp(resp)
+        items = [SearchResultItem(**i) for i in resp.get("list", [])]
+        df = pd.DataFrame(items)
+        df["rcept_dt"] = df["rcept_dt"].apply(lambda v: datetime_parse(v).date())
+        df["corp_cls"] = df["corp_cls"].apply(Market)
+        df = df.rename(
+            columns={
+                "corp_code": "corporation_code",
+                "corp_name": "corporation_name",
+                "stock_code": "stock_code",
+                "corp_cls": "market",
+                "report_nm": "report_name",
+                "rcept_no": "receipt_no",
+                "flr_nm": "filler_name",
+                "rcept_dt": "receipt_date",
+                "rm": "remarks",
+            }
+        )
+
+        return df
 
     def get_company_overview(
         self,
         corporation_code: str,  # corp_code
-    ) -> CompanyOverview:
+    ) -> pd.DataFrame:
         resp = self.client.json("company", corp_code=corporation_code)
-        return CompanyOverview.from_dart_resp(resp)
+
+        df = pd.DataFrame([CompanyOverview(**resp)])
+        df["est_dt"] = df["est_dt"].apply(lambda v: datetime_parse(v).date())
+        df["corp_cls"] = df["corp_cls"].apply(Market)
+        df = df.rename(
+            columns={
+                "corp_code": "corporation_code",
+                "corp_name": "corporation_name",
+                "stock_code": "stock_code",
+                "stock_name": "stock_name",
+                "ceo_nm": "ceo_name",
+                "corp_cls": "market",
+                "jurir_no": "corporation_registration_number",
+                "bizr_no": "business_registration_number",
+                "adres": "address",
+                "hm_url": "homepage_url",
+                "ir_url": "ir_url",
+                "phn_no": "phone_number",
+                "fax_no": "fax_number",
+                "induty_code": "industry_code",
+                "est_dt": "established_date",
+                "acc_mt": "accounting_month",
+            }
+        )
+
+        return df
+
+
