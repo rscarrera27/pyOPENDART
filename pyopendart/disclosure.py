@@ -2,7 +2,7 @@ from collections import namedtuple
 from dataclasses import dataclass
 from datetime import date
 from enum import Enum
-from typing import Optional
+from typing import Optional, Tuple
 
 import pandas as pd
 from dateutil.parser import parse as datetime_parse
@@ -78,7 +78,7 @@ class Disclosure:
         market: Optional[Market] = None,  # corp_cls
         sort: Optional[Sort] = None,  # sort, sort_mth
         pagination: Optional[Pagination] = None,
-    ) -> pd.DataFrame:
+    ) -> Tuple[dict, pd.DataFrame]:
         params = {
             "corp_code": corporation_code if corporation_code else None,
             "last_reprt_at": {True: "Y", False: "N"}.get(only_last_report),
@@ -93,7 +93,8 @@ class Disclosure:
 
         resp = self.client.json("list", **params)
 
-        items = [SearchResultItem(**i) for i in resp.get("list", [])]
+        items = [SearchResultItem(**i) for i in resp.pop("list")]
+
         df = pd.DataFrame(items)
         df["rcept_dt"] = df["rcept_dt"].apply(lambda v: datetime_parse(v).date())
         df["corp_cls"] = df["corp_cls"].apply(Market)
@@ -111,7 +112,7 @@ class Disclosure:
             }
         )
 
-        return df
+        return resp, df
 
     def get_company_overview(
         self,
