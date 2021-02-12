@@ -4,7 +4,7 @@ from enum import Enum
 from typing import Optional
 
 from pyopendart.clients.dict.base import DictClient
-from pyopendart.clients.enum import Market
+from pyopendart.enums import Market
 
 
 @dataclass

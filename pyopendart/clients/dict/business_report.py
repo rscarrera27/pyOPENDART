@@ -1,7 +1,7 @@
 from typing import Sequence
 
 from pyopendart.clients.dict.base import DictClient
-from pyopendart.clients.enum import ReportType
+from pyopendart.enums import ReportType
 
 
 class BusinessReportClient(DictClient):

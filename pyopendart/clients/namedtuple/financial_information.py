@@ -2,7 +2,7 @@ from collections import namedtuple
 from typing import Sequence
 
 from pyopendart.clients.dict.financial_information import FinancialInformationClient
-from pyopendart.clients.enum import FinancialStatementDivision, ReportType
+from pyopendart.enums import FinancialStatementDivision, ReportType
 
 MajorAccountItem = namedtuple(
     "MajorAccountItem",

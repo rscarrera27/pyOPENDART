@@ -4,8 +4,8 @@ import pandas as pd
 
 from pyopendart.clients.dataframe.utils import DEFAULT_RENAME_MAPPING, construct_dataframe, get_converters
 from pyopendart.clients.dict.disclosure import DateRange, DisclosureType, Sort
-from pyopendart.clients.enum import Market
 from pyopendart.clients.namedtuple.disclosure import NamedtupleDisclosureClient
+from pyopendart.enums import Market
 
 
 class DataframeDisclosureClient(NamedtupleDisclosureClient):

@@ -3,8 +3,8 @@ from typing import Optional, Tuple
 import pandas as pd
 
 from pyopendart.clients.dataframe.utils import DEFAULT_RENAME_MAPPING, construct_dataframe, get_converters
-from pyopendart.clients.enum import ReportType
 from pyopendart.clients.namedtuple.business_report import NamedtupleBusinessReportClient
+from pyopendart.enums import ReportType
 
 
 class DataframeBusinessReportClient(NamedtupleBusinessReportClient):

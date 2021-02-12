@@ -2,7 +2,7 @@ from collections import namedtuple
 from typing import List, Optional, Tuple
 
 from pyopendart.clients.dict.disclosure import DateRange, DisclosureClient, DisclosureType, Sort
-from pyopendart.clients.enum import Market
+from pyopendart.enums import Market
 
 SearchResultItem = namedtuple(
     "SearchResultItem",

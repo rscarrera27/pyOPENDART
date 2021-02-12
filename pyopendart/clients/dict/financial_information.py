@@ -1,7 +1,7 @@
-from typing import Dict, Sequence
+from typing import Sequence
 
 from pyopendart.clients.dict.base import DictClient
-from pyopendart.clients.enum import FinancialStatementDivision, ReportType
+from pyopendart.enums import FinancialStatementDivision, ReportType
 
 
 class FinancialInformationClient(DictClient):

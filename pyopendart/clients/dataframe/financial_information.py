@@ -3,8 +3,8 @@ from typing import Optional, Sequence, Tuple
 import pandas as pd
 
 from pyopendart.clients.dataframe.utils import DEFAULT_RENAME_MAPPING, construct_dataframe, get_converters
-from pyopendart.clients.enum import FinancialStatementDivision, ReportType
 from pyopendart.clients.namedtuple.financial_information import NamedtupleFinancialInformationClient
+from pyopendart.enums import FinancialStatementDivision, ReportType
 
 
 class DataframeFinancialInformationClient(NamedtupleFinancialInformationClient):

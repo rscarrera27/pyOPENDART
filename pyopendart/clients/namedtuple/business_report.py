@@ -2,7 +2,7 @@ from collections import namedtuple
 from typing import Sequence
 
 from pyopendart.clients.dict.business_report import BusinessReportClient
-from pyopendart.clients.enum import ReportType
+from pyopendart.enums import ReportType
 
 ChangeInEquity = namedtuple(
     "ChangeInEquity",

@@ -4,12 +4,13 @@ from typing import Any, Callable, Dict, Optional, Sequence, Tuple
 import pandas as pd
 from dateutil.parser import parse as datetime_parse
 
-from pyopendart.clients.enum import FinancialStatementDivision, FinancialStatementType, Market, ReportType
 from pyopendart.common import dart_atoi, is_dart_null
+from pyopendart.enums import FinancialStatementDivision, FinancialStatementType, Market, ReportType
 
 DEFAULT_RENAME_MAPPING = {
     "corp_code": "corporation_code",
     "corp_name": "corporation_name",
+    "corp_name_eng": "corporation_name_en",
     "stock_code": "stock_code",
     "corp_cls": "market",
     "report_nm": "report_name",
@@ -267,7 +268,7 @@ def construct_dataframe(
         df = df.sort_values(sort_by, ascending=sort_asc)
 
     if rename:
-        columns = {k: rename[k] for k in df.columns.values}
+        columns = {k: rename.get(k, k) for k in df.columns.values}
         df = df.rename(
             columns=columns,
         )
