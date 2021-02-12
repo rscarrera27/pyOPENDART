@@ -1,0 +1,39 @@
+site_name: pyOPENDART
+
+site_author: Seonghyeon Kim
+site_description: 전자공시시스템 DART 파이썬 API (for Humans)
+
+repo_name: NovemberOscar/pyOPENDART
+repo_url: https://github.com/NovemberOscar/pyOPENDART
+edit_uri: ""
+
+copyright: Copyright &copy; 2021- Seonghyeon Kim
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.details
+  - admonition
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - toc:
+      permalink: true
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+  language: kr
+
+nav:
+  - Home: index.md
+  - Clients:
+    - 공시정보: disclosure.md
+    - 사업보고서 주요정보: business_report.md
+    - 상장기업 재무정보: financial_statement.md
+    - 지분공시 종합정보: shareholder_report.md
+    - 고급 데이터프레임 클라이언트 옵션: advanced_df_client_usage.md
