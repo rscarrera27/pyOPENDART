@@ -133,6 +133,22 @@ DEFAULT_RENAME_MAPPING = {
     'label_eng': "label_en",
     'data_tp': "data_type",
     'ifrs_ref': "ifrs_ref",
+    "report_tp": "major_shareholder_report_type",
+    "repror": "reporter",
+    "stkqy": "shares_quantity",
+    "stkqy_irds": "increased_or_decreased_quantity",
+    "stkrt": "shares_ratio",
+    "stkrt_irds": "increased_or_decreased_ratio",
+    "ctr_stkqy": "contract_shares_quantity",
+    "ctr_stkrt": "contract_shares_ratio",
+    "report_resn": "report_reason",
+    "isu_exctv_rgist_at": "is_registered",
+    "isu_exctv_ofcps": "position",
+    "isu_main_shrholdr": "shareholder_detail",
+    "sp_stock_lmp_cnt": "shares_quantity",
+    "sp_stock_lmp_irds_cnt": "increased_or_decreased_quantity",
+    "sp_stock_lmp_rate": "shares_ratio",
+    "sp_stock_lmp_irds_rate": "increased_or_decreased_ratio",
 }
 
 DEFAULT_CONVERTERS = {
@@ -210,6 +226,17 @@ DEFAULT_CONVERTERS = {
     "ord": dart_atoi,
     "frmtrm_q_amount": dart_atoi,
     "bsns_de": lambda v: datetime.strptime(v, "%Y%m%d").date(),
+    "stkqy": dart_atoi,
+    "stkqy_irds": dart_atoi,
+    "stkrt": dart_atoi,
+    "stkrt_irds": dart_atoi,
+    "ctr_stkqy": dart_atoi,
+    "ctr_stkrt": dart_atoi,
+    "isu_exctv_rgist_at": lambda v: True if v.startswith("등기") else False,
+    "sp_stock_lmp_cnt": dart_atoi,
+    "sp_stock_lmp_irds_cnt": dart_atoi,
+    "sp_stock_lmp_rate": dart_atoi,
+    "sp_stock_lmp_irds_rate": dart_atoi,
 }
 
 

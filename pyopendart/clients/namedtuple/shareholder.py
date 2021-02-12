@@ -1,17 +1,17 @@
 from collections import namedtuple
 from typing import Sequence
 
-from pyopendart.clients.dict.shareholder import ShareholderClient
+from pyopendart.clients.dict.shareholder import ShareholderReportClient
 
-MajorShareholder = namedtuple(
+MajorShareholderReport = namedtuple(
     "MajorShareholder",
     [
         "rcept_no",
         "rcept_dt",
         "corp_code",
         "corp_name",
-        "report_tp",
         "repror",
+        "report_tp",
         "stkqy",
         "stkqy_irds",
         "stkrt",
@@ -22,7 +22,7 @@ MajorShareholder = namedtuple(
     ],
 )
 
-ExecutiveShareholder = namedtuple(
+ExecutiveShareholderReport = namedtuple(
     "ExecutiveShareholder",
     [
         "rcept_no",
@@ -41,11 +41,11 @@ ExecutiveShareholder = namedtuple(
 )
 
 
-class NamedtupleShareholderClient(ShareholderClient):
-    def get_major_shareholders(self, corporation_code: str) -> Sequence[MajorShareholder]:
-        items = super(NamedtupleShareholderClient, self).get_major_shareholders(corporation_code)
-        return [MajorShareholder(**i) for i in items]
+class NamedtupleShareholderReportClient(ShareholderReportClient):
+    def get_major_shareholder_reports(self, corporation_code: str) -> Sequence[MajorShareholderReport]:
+        items = super(NamedtupleShareholderReportClient, self).get_major_shareholder_reports(corporation_code)
+        return [MajorShareholderReport(**i) for i in items]
 
-    def get_executive_shareholders(self, corporation_code: str) -> Sequence[ExecutiveShareholder]:
-        items = super(NamedtupleShareholderClient, self).get_executive_shareholders(corporation_code)
-        return [ExecutiveShareholder(**i) for i in items]
+    def get_executive_shareholder_reports(self, corporation_code: str) -> Sequence[ExecutiveShareholderReport]:
+        items = super(NamedtupleShareholderReportClient, self).get_executive_shareholder_reports(corporation_code)
+        return [ExecutiveShareholderReport(**i) for i in items]
