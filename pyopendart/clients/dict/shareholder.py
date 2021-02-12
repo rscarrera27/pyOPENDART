@@ -1,12 +1,13 @@
-from pyopendart.client import DartClient
+from typing import Sequence
+
+from pyopendart.clients.dict.base import DictClient
 
 
-class Shares:
-    def __init__(self, api_key: str) -> None:
-        self.client = DartClient(api_key)
+class ShareholderClient(DictClient):
+    def get_major_shareholders(self, corporation_code: str) -> Sequence[dict]:
+        params = {"corp_code": corporation_code}
+        return self.client.xml("majorstock", **params).get("list", [])
 
-    def get_major_shareholders(self):
-        pass
-
-    def get_executive_shareholders(self):
-        pass
+    def get_executive_shareholders(self, corporation_code: str) -> Sequence[dict]:
+        params = {"corp_code": corporation_code}
+        return self.client.xml("elestock", **params).get("list", [])

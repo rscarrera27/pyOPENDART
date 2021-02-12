@@ -49,7 +49,7 @@ class DartClient(metaclass=_DartSingleton):
 
         return json
 
-    def xml(self, name: str, **kwargs):
+    def xml(self, name: str, **kwargs) -> dict:
         url = furl(self.dart_host)
         url /= f"{name}.xml"
         url.args["crtfc_key"] = self.api_key
