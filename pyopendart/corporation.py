@@ -23,14 +23,14 @@ class Corporation:
         default_download_timeout: Any = None,
         **kwargs,
     ) -> None:
-        client = client or client_cls(default_timeout, default_download_timeout, **kwargs)
+        client = client or client_cls(api_key, default_timeout, default_download_timeout, **kwargs)
         self._disclosure_cli = DataframeDisclosureClient(api_key=api_key, client=client)
         self._business_report_cli = DataframeBusinessReportClient(api_key=api_key, client=client)
         self._financial_report_cli = DataframeFinancialInformationClient(api_key=api_key, client=client)
         self._shareholder_report_cli = DataframeShareholderReportClient(api_key=api_key, client=client)
 
         self.corporation_code = corporation_code
-        self._company_info: pd.DataFrame = None  # noqa
+        self._company_info: dict = None  # noqa
 
     @property
     def company_info(self) -> dict:
