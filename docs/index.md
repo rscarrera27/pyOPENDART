@@ -27,6 +27,7 @@
 * OPEN API 네임드튜플 클라이언트
 * OPEN API 딕셔너리 클라이언트
 * 편리하고 타입 정의된 클라이언트 인터페이스
+* 쉽게 해당 기업의 정보를 받아오기 위한 기업 객체 제공
 
 ## License
 This project is licensed under the terms of the MIT license.
