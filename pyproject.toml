@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "pyOPENDART"
-version = "0.2.0-alpha.2"
-description = "인간 친화적인 전자공시시스템 DART 파이썬 API"
+version = "0.2.0-alpha.3"
+description = "전자공시시스템 DART 파이썬 API (for Humans)"
 authors = ["Seonghyeon Kim <self@seonghyeon.dev>"]
 license = "MIT"
 readme = "README.md"
