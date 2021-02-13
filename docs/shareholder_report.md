@@ -5,19 +5,19 @@
 === "Dataframe"
 
     ```python
-    from pyopendart.clients.dataframe.shareholder import DataframeShareholderReportClient
+    from pyopendart.clients import DataframeShareholderReportClient
     ```
 
 === "Namedtuple"
     
     ```python
-    from pyopendart.clients.namedtuple.shareholder import NamedtupleShareholderReportClient
+    from pyopendart.clients import NamedtupleShareholderReportClient
     ```
 
 === "Dict"
     
     ```python
-    from pyopendart.clients.dict.shareholder import ShareholderReportClient
+    from pyopendart.clients import ShareholderReportClient
     ```
 
 ## Parameter

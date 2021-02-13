@@ -5,21 +5,21 @@
 === "Dataframe"
 
     ```python
-    from pyopendart.clients.dataframe.financial_information import DataframeFinancialInformationClient
+    from pyopendart.clients import DataframeFinancialInformationClient
     from pyopendart.enums import ReportType
     ```
 
 === "Namedtuple"
     
     ```python
-    from pyopendart.clients.namedtuple.financial_information import NamedtupleFinancialInformationClient
+    from pyopendart.clients import NamedtupleFinancialInformationClient
     from pyopendart.enums import ReportType
     ```
 
 === "Dict"
     
     ```python
-    from pyopendart.clients.dict.financial_information import FinancialInformationClient
+    from pyopendart.clients import FinancialInformationClient
     from pyopendart.enums import ReportType
     ```
 
