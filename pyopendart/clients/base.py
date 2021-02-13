@@ -15,5 +15,6 @@ class ClientBase:
     ) -> None:
         if client:
             self.client = client
+            self.client.api_key = api_key
         else:
             self.client = client_cls(api_key, default_timeout, default_download_timeout, **kwargs)
