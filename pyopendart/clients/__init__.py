@@ -10,6 +10,8 @@ from pyopendart.clients.dict import (
     FinancialInformationClient,
     ShareholderReportClient,
 )
+from pyopendart.clients.file.disclosure import DisclosureFileDownloader
+from pyopendart.clients.file.financial_statement import FinancialStatementFileDownloader
 from pyopendart.clients.namedtuple import (
     NamedtupleBusinessReportClient,
     NamedtupleDisclosureClient,
@@ -30,4 +32,6 @@ __all__ = (
     BusinessReportClient,
     FinancialInformationClient,
     ShareholderReportClient,
+    DisclosureFileDownloader,
+    FinancialStatementFileDownloader,
 )
