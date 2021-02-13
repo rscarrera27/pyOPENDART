@@ -6,6 +6,12 @@
     * 본 소프트웨어는 금융감독원의 전자공시시스템 OPEN API 를 추가적으로 가공하고 부가기능을 제공하는 소프트웨어로써 MIT 라이선스에 따라 저자 또는 저작권자는 소프트웨어와 소프트웨어와 연관되어 발생하는 문제에 대해 책임을 지지 않습니다.
     * OPEN DART API에 관한 정보는 opendart.fss.or.kr 를 참조하시기 바랍니다.
 
+## Installation
+
+```shell
+pip install pyopendart
+```
+
 ## What is DART?
 
 > 전자공시시스템(DART ; Data Analysis, Retrieval and Transfer System)은 상장법인 등이 공시서류를 인터넷으로 제출 하고, 투자자 등 이용자는 제출 즉시 인터넷을 통해 조회할 수 있도록 하는 종합적 기업공시 시스템입니다.
@@ -27,7 +33,7 @@
 * OPEN API 네임드튜플 클라이언트
 * OPEN API 딕셔너리 클라이언트
 * 편리하고 타입 정의된 클라이언트 인터페이스
-* 쉽게 해당 기업의 정보를 받아오기 위한 기업 객체 제공
+* 쉽게 해당 기업의 정보를 받아오기 위한 법인 클래스 제공
 
 ## License
 This project is licensed under the terms of the MIT license.

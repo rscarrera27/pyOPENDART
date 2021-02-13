@@ -1,10 +1,14 @@
 # pyOPENDART - OPEN DART Python API (for Humans)
 
-인간친화적인 전자공시시스템 DART 파이썬 API
+전자공시시스템 API 를 편리하게 사용하기 위해 딕셔너리를 리턴하는 저수준 API부터 데이터프레임, 네임드튜플 등을 리턴하는 고수준 API 등 각종 편리한 API들을 제공합니다.
 
-전자공시시스템 API 를 편리하게 사용하기 위해 딕셔너리를 리턴하는 저수준 API부터 데이터프레임, 네임드튜플 등을 리턴하는 고수준 API 등 각종 편리한 API가 구현되어 있습니다.
+## Installation
 
-### Disclimer
+```shell
+pip install pyopendart
+```
+
+### Disclaimer
 * 본 소프트웨어는 금융감독원의 전자공시시스템 OPEN API 를 추가적으로 가공하고 부가기능을 제공하는 소프트웨어로써 MIT 라이선스에 따라 저자 또는 저작권자는 소프트웨어와 소프트웨어와 연관되어 발생하는 문제에 대해 책임을 지지 않습니다.
 * OPEN DART API에 관한 정보는 opendart.fss.or.kr 를 참조하시기 바랍니다.
 
@@ -29,7 +33,7 @@
 * OPEN API 네임드튜플 클라이언트
 * OPEN API 딕셔너리 클라이언트
 * 편리하고 타입 정의된 클라이언트 인터페이스
-* ~~해당 법인을 조회하고 정보를 편리하게 받아올 수 있는 법인 객체~~ (구현 예정)
+* 쉽게 해당 기업의 정보를 받아오기 위한 법인 클래스 제공
 
 ## Todos
 * 테스트코드
@@ -38,6 +42,8 @@
 * 문서화
 
 ## Usage
+
+[https://pyopendart.seonghyeon.dev/](https://pyopendart.seonghyeon.dev/) 에서 자세한 문서를 확인할 수 있습니다.
 
 ### 공시정보 API (Dataframe)
 
