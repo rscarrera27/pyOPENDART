@@ -55,7 +55,11 @@ class DataframeDisclosureClient(NamedtupleDisclosureClient):
         rename_fields: bool = True,
     ) -> Tuple[pd.DataFrame, Optional[dict]]:
         items = super(DataframeDisclosureClient, self).get_company_overview(corporation_code)
-        converters = get_converters("jurir_no", "bizr_no", "induty_code", "est_dt", "acc_mt") if convert_data else None
+        converters = (
+            get_converters("corp_cls", "jurir_no", "bizr_no", "induty_code", "est_dt", "acc_mt")
+            if convert_data
+            else None
+        )
         rename = DEFAULT_RENAME_MAPPING if rename_fields else None
 
         return construct_dataframe(items, converters=converters, rename=rename)
