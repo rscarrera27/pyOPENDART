@@ -160,7 +160,7 @@ DEFAULT_CONVERTERS = {
     "induty_code": dart_atoi,
     "est_dt": lambda v: datetime_parse(v).date(),
     "acc_mt": dart_atoi,
-    "isu_dcrs_de": lambda v: datetime_parse(v).date(),
+    "isu_dcrs_de": lambda v: datetime_parse(v).date() if not is_dart_null(v) else v,
     "isu_dcrs_qy": dart_atoi,
     "isu_dcrs_mstvdv_fval_amount": dart_atoi,
     "isu_dcrs_mstvdv_amount": dart_atoi,
