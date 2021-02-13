@@ -15,7 +15,7 @@ except ImportError:
     httpx = False
 
 
-class DartClient(ABC):
+class OpenApiClient(ABC):
     def __init__(
         self, api_key: str, default_timeout: Any = None, default_download_timeout: Any = None, **kwargs
     ) -> None:
@@ -36,7 +36,7 @@ class DartClient(ABC):
         pass
 
 
-class RequestsDartClient(DartClient):
+class RequestsOpenApiClient(OpenApiClient):
     dart_host = "https://opendart.fss.or.kr/api/"
 
     def json(self, name: str, params: dict, timeout: Any = None) -> dict:
@@ -129,7 +129,7 @@ class RequestsDartClient(DartClient):
         return save_to
 
 
-class HttpxDartClient(DartClient):
+class HttpxOpenApiClient(OpenApiClient):
     dart_host = "https://opendart.fss.or.kr/api/"
 
     def __init__(
@@ -138,7 +138,7 @@ class HttpxDartClient(DartClient):
         if httpx is False:
             raise ImportError("httpx not installed")
 
-        super(HttpxDartClient, self).__init__(api_key, default_timeout, default_download_timeout, **kwargs)
+        super(HttpxOpenApiClient, self).__init__(api_key, default_timeout, default_download_timeout, **kwargs)
 
     def json(self, name: str, params: dict, timeout: Any = None) -> dict:
         url = furl(self.dart_host)
