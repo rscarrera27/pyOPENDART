@@ -3,7 +3,7 @@ from datetime import date
 from enum import Enum
 from typing import Optional
 
-from pyopendart.clients.dict.base import DictClient
+from pyopendart.clients.base import ClientBase
 from pyopendart.enums import DisclosureType, Market, SortBy
 
 
@@ -30,7 +30,7 @@ class Sort:
         return {"sort": self.by.value, "sort_mth": "asc" if self.ascending else "desc"}
 
 
-class DisclosureClient(DictClient):
+class DisclosureClient(ClientBase):
     def search(
         self,
         corporation_code: Optional[str] = None,  # corp_code
@@ -60,10 +60,10 @@ class DisclosureClient(DictClient):
         }
         params = {k: v for k, v in params.items() if v is not None}
 
-        return self.client.json("list", **params)
+        return self.client.json("list", params)
 
     def get_company_overview(
         self,
         corporation_code: str,  # corp_code
     ) -> dict:
-        return self.client.json("company", corp_code=corporation_code)
+        return self.client.json("company", {'corp_code': corporation_code})
