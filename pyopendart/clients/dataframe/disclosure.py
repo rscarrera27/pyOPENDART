@@ -1,23 +1,26 @@
+from datetime import date
 from typing import Optional, Tuple
 
 import pandas as pd
 
 from pyopendart.clients.dataframe.utils import DEFAULT_RENAME_MAPPING, construct_dataframe, get_converters
-from pyopendart.clients.dict.disclosure import DateRange, DisclosureType, Sort
+from pyopendart.clients.dict.disclosure import DateRange, Sort
 from pyopendart.clients.namedtuple.disclosure import NamedtupleDisclosureClient
-from pyopendart.enums import Market
+from pyopendart.enums import DisclosureType, Market, SortBy
 
 
 class DataframeDisclosureClient(NamedtupleDisclosureClient):
     def search(
         self,
-        corporation_code: Optional[str] = None,
-        date_range: Optional[DateRange] = None,
-        only_last_report: Optional[bool] = None,
-        type: Optional[DisclosureType] = None,
-        type_detail: Optional[str] = None,
-        market: Optional[Market] = None,
-        sort: Optional[Sort] = None,
+        corporation_code: Optional[str] = None,  # corp_code
+        date_begin: Optional[date] = None,  # bgn_de
+        date_end: Optional[date] = None,  # end_de
+        only_last_report: Optional[bool] = None,  # last_reprt_at
+        type: Optional[DisclosureType] = None,  # pblntf_ty
+        type_detail: Optional[str] = None,  # pblntf_detail_ty TODO: enum
+        market: Optional[Market] = None,  # corp_cls
+        sort_by: Optional[SortBy] = None,
+        ascending: bool = False,
         page: int = 1,
         limit: int = 20,
         *,
@@ -26,7 +29,17 @@ class DataframeDisclosureClient(NamedtupleDisclosureClient):
         set_index: bool = True,
     ) -> Tuple[pd.DataFrame, Optional[dict], dict]:
         items, pagination = super(DataframeDisclosureClient, self).search(
-            corporation_code, date_range, only_last_report, type, type_detail, market, sort, page, limit
+            corporation_code,
+            date_begin,
+            date_end,
+            only_last_report,
+            type,
+            type_detail,
+            market,
+            sort_by,
+            ascending,
+            page,
+            limit,
         )
         converters = get_converters("corp_cls", "rcept_dt") if convert_data else None
         rename = DEFAULT_RENAME_MAPPING if rename_fields else None
@@ -46,17 +59,3 @@ class DataframeDisclosureClient(NamedtupleDisclosureClient):
         rename = DEFAULT_RENAME_MAPPING if rename_fields else None
 
         return construct_dataframe(items, converters=converters, rename=rename)
-
-
-if __name__ == "__main__":
-    from datetime import date, datetime
-
-    c = DataframeDisclosureClient("e32e1ae12ac94446f3133bc0b7e42491b0cde4a3")
-
-    r1 = c.search(
-        date_range=DateRange(begin=date(year=2021, month=1, day=1), end=datetime.now().date()),
-        market=Market.KOSPI,
-    )
-    r2 = c.get_company_overview("00126380")
-
-    print(r1)

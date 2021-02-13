@@ -4,7 +4,7 @@ from enum import Enum
 from typing import Optional
 
 from pyopendart.clients.dict.base import DictClient
-from pyopendart.enums import Market
+from pyopendart.enums import DisclosureType, Market, SortBy
 
 
 @dataclass
@@ -14,19 +14,6 @@ class DateRange:
 
     def serialize(self):
         return {"bgn_de": self.begin.strftime("%Y%m%d"), "end_de": self.end.strftime("%Y%m%d")}
-
-
-class DisclosureType(Enum):
-    A = "A"  # 정기공시
-    B = "B"  # 주요사항보고
-    C = "C"  # 발행공시
-    D = "D"  # 지분공시
-    E = "E"  # 기타공시
-    F = "F"  # 외부감사관련
-    G = "G"  # 펀드공시
-    H = "H"  # 자산유동화
-    I = "I"  # 거래소공시
-    J = "J"  # 공정위공시
 
 
 @dataclass
@@ -47,26 +34,30 @@ class DisclosureClient(DictClient):
     def search(
         self,
         corporation_code: Optional[str] = None,  # corp_code
-        date_range: Optional[DateRange] = None,  # bgn_de, end_de
+        date_begin: Optional[date] = None,  # bgn_de
+        date_end: Optional[date] = None,  # end_de
         only_last_report: Optional[bool] = None,  # last_reprt_at
         type: Optional[DisclosureType] = None,  # pblntf_ty
         type_detail: Optional[str] = None,  # pblntf_detail_ty TODO: enum
         market: Optional[Market] = None,  # corp_cls
-        sort: Optional[Sort] = None,  # sort, sort_mth
+        sort_by: Optional[SortBy] = None,
+        ascending: bool = False,
         page: int = 1,
         limit: int = 20,
     ) -> dict:
         params = {
             "corp_code": corporation_code if corporation_code else None,
+            "bgn_de": date_begin.strftime("%Y%m%d") if date_begin else None,
+            "end_de": date_end.strftime("%Y%m%d") if date_end else None,
             "last_reprt_at": {True: "Y", False: "N"}.get(only_last_report),
             "pblntf_ty": type.value if type else None,
             "pblntf_detail_ty": type_detail if type_detail else None,
             "corp_cls": market.value if market else None,
+            "sort_by": sort_by.value if sort_by else None,
+            "ascending": ("asc" if ascending else "desc") if ascending else None,
             "page_no": str(page),
             "page_count": str(limit),
         }
-        params.update(date_range.serialize()) if date_range else None
-        params.update(sort.serialize()) if sort else None
         params = {k: v for k, v in params.items() if v is not None}
 
         return self.client.json("list", **params)

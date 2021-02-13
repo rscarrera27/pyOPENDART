@@ -1,8 +1,9 @@
 from collections import namedtuple
+from datetime import date
 from typing import List, Optional, Tuple
 
-from pyopendart.clients.dict.disclosure import DateRange, DisclosureClient, DisclosureType, Sort
-from pyopendart.enums import Market
+from pyopendart.clients.dict.disclosure import DateRange, DisclosureClient, Sort
+from pyopendart.enums import DisclosureType, Market, SortBy
 
 SearchResultItem = namedtuple(
     "SearchResultItem",
@@ -37,17 +38,29 @@ class NamedtupleDisclosureClient(DisclosureClient):
     def search(
         self,
         corporation_code: Optional[str] = None,  # corp_code
-        date_range: Optional[DateRange] = None,  # bgn_de, end_de
+        date_begin: Optional[date] = None,  # bgn_de
+        date_end: Optional[date] = None,  # end_de
         only_last_report: Optional[bool] = None,  # last_reprt_at
         type: Optional[DisclosureType] = None,  # pblntf_ty
         type_detail: Optional[str] = None,  # pblntf_detail_ty TODO: enum
         market: Optional[Market] = None,  # corp_cls
-        sort: Optional[Sort] = None,  # sort, sort_mth
+        sort_by: Optional[SortBy] = None,
+        ascending: bool = False,
         page: int = 1,
         limit: int = 20,
     ) -> Tuple[List[SearchResultItem], dict]:
         resp = super(NamedtupleDisclosureClient, self).search(
-            corporation_code, date_range, only_last_report, type, type_detail, market, sort, page, limit
+            corporation_code,
+            date_begin,
+            date_end,
+            only_last_report,
+            type,
+            type_detail,
+            market,
+            sort_by,
+            ascending,
+            page,
+            limit,
         )
         items = [SearchResultItem(**i) for i in resp.pop("list")]
 
