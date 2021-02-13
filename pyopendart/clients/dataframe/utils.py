@@ -4,8 +4,8 @@ from typing import Any, Callable, Dict, Optional, Sequence, Tuple
 import pandas as pd
 from dateutil.parser import parse as datetime_parse
 
-from pyopendart.common import dart_atoi, is_dart_null
 from pyopendart.enums import FinancialStatementDivision, FinancialStatementType, Market, ReportType
+from pyopendart.utils import dart_atoi, is_dart_null
 
 DEFAULT_RENAME_MAPPING = {
     "corp_code": "corporation_code",
