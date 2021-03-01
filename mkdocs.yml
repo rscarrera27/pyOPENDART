@@ -31,14 +31,11 @@ theme:
 
 nav:
   - Home: index.md
-  - Corporation: corporation.md
   - Clients:
-    - 공시정보: clients/disclosure.md
-    - 사업보고서 주요정보: clients/business_report.md
-    - 상장기업 재무정보: clients/financial_statement.md
-    - 지분공시 종합정보: clients/shareholder_report.md
-    - 원본파일 다운로드: clients/download.md
-  - Advanced Usage:
-    - 타임아웃 설정하기: advanced/timeout.md
-    - 고급 데이터프레임 클라이언트 옵션: advanced/df_client.md
-    - HTTPX 클라이언트 사용하기: advanced/httpx.md
+    - 공시정보: api/filling.md
+    - 사업보고서 주요정보: api/business_report.md
+    - 상장기업 재무정보: api/financial_statement.md
+    - 지분공시 종합정보: api/shareholders_report.md
+    - 클라이언트 설정하기: api/configuration.md
+  - Exceptions: exceptions.md
+  - Utils: utils.md

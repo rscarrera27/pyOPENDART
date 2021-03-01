@@ -1,16 +1,17 @@
-# pyOPENDART - OPEN DART Python API (for Humans)
+# OPEN DART Python API (for Humans)
 
-전자공시시스템 API 를 편리하게 사용하기 위해 딕셔너리를 리턴하는 저수준 API부터 데이터프레임, 네임드튜플 등을 리턴하는 고수준 API 등 각종 편리한 API들을 제공합니다.
+전자공시시스템 API 를 편리하게 사용하기 위해 저수준 HTTP API부터 데이터프레임을 리턴하는 고수준 API 등 각종 편리한 API와 유틸리티들을 제공합니다.
+
+### Disclaimer
+> 본 소프트웨어는 금융감독원의 전자공시시스템 OPEN API 를 추가적으로 가공하고 부가기능을 제공하는 소프트웨어로써 MIT 라이선스에 따라 저자 또는 저작권자는 소프트웨어와 소프트웨어와 연관되어 발생하는 문제에 대해 책임을 지지 않습니다.
+> 
+> OPEN DART API에 관한 정보는 opendart.fss.or.kr 를 참조하시기 바랍니다.
 
 ## Installation
 
 ```shell
 pip install pyopendart
 ```
-
-### Disclaimer
-* 본 소프트웨어는 금융감독원의 전자공시시스템 OPEN API 를 추가적으로 가공하고 부가기능을 제공하는 소프트웨어로써 MIT 라이선스에 따라 저자 또는 저작권자는 소프트웨어와 소프트웨어와 연관되어 발생하는 문제에 대해 책임을 지지 않습니다.
-* OPEN DART API에 관한 정보는 opendart.fss.or.kr 를 참조하시기 바랍니다.
 
 ## What is DART?
 
@@ -26,106 +27,21 @@ pip install pyopendart
 
 ## Features
 
-* OPEN API 데이터프레임 클라이언트
-  * 읽기 쉬운 형태로 필드명 자동 변환
-  * 숫자, 시간등 일부 데이터 타입 자동 변환
-  * 재무재표 양식대로 자동 인덱싱
-* OPEN API 네임드튜플 클라이언트
-* OPEN API 딕셔너리 클라이언트
-* 편리하고 타입 정의된 클라이언트 인터페이스
-* 쉽게 해당 기업의 정보를 받아오기 위한 법인 클래스 제공
-
-## Todos
-* 테스트코드
-* 법인 객체
-* 데이터 다운로드 API
-* 문서화
+* OPEN API 데이터프레임, 딕셔너리 클라이언트
+    * dart의 축약된 필드명을 자세한 한글, 영어 필드명으로 변환
+    * 날짜, 숫자등에 대해 데이터 타입 변환
+* 공시원문, 재무재표 등 원본파일 다운로드 클라이언트
+* 로우레벨 OPEN API HTTP 클라이언트
+    * 커넥션 풀, 타임아웃등 네트워크 옵션 조정 기능 제공
+    * xml, json, zip 리소스 접근 메서드 제공
+* 편리하고 타입 정의된 클라이언트 인터페이스들
+    * 요청 인자 중 공시유형등의 필드에 대한 Enum 제공
+    * 예외 클래스 제공
+* 개발가이드에 나와있는 출력설명란의 출력과 설명의 매핑 제공 (비고 등)
 
 ## Usage
 
 [https://pyopendart.seonghyeon.dev/](https://pyopendart.seonghyeon.dev/) 에서 자세한 문서를 확인할 수 있습니다.
-
-### 공시정보 API (Dataframe)
-
-```python
-from datetime import date, datetime
-from pyopendart.clients.dataframe.disclosure import DataframeDisclosureClient
-from pyopendart.clients.dict.disclosure import DateRange
-from pyopendart.enums import Market
-
-df_client = DataframeDisclosureClient("YOUR API KEY")
-
-# 공시검색
-df_client.search(
-    date_range=DateRange(begin=date(year=2021, month=1, day=1), end=datetime.now().date()),
-    market=Market.KOSPI,
-)
-# 기업개황
-df_client.get_company_overview("00126380")
-```
-
-### 사업보고서 API (Dataframe)
-
-```python
-from pyopendart.clients.dataframe.business_report import DataframeBusinessReportClient
-from pyopendart.enums import ReportType
-
-df_client = DataframeBusinessReportClient("YOUR API KEY")
-
-# 증자(감자) 현황
-df_client.get_changes_in_equity(corporation_code="00293886", business_year=2018, report_type=ReportType.ANNUAL)
-# 배당에 관한 사항
-df_client.get_dividend_info(corporation_code="00293886", business_year=2018, report_type=ReportType.ANNUAL)
-# 자기주식 취득 및 처분 현황
-df_client.get_treasury_shares_status(corporation_code="00293886", business_year=2018, report_type=ReportType.ANNUAL)
-# 최대주주 현황
-df_client.get_major_shareholders(corporation_code="00293886", business_year=2018, report_type=ReportType.ANNUAL)
-# 최대주주 변동 현황
-df_client.get_changes_in_major_shareholder(corporation_code="00356361", business_year=2018, report_type=ReportType.ANNUAL)
-# 소액주주 현황
-df_client.get_minority_shareholders_status(corporation_code="00293886", business_year=2019, report_type=ReportType.Q1)
-# 임원 현황
-df_client.get_executives(corporation_code="00126380", business_year=2019, report_type=ReportType.Q1)
-# 직원 현황
-df_client.get_employment_status(corporation_code="00126380", business_year=2019, report_type=ReportType.Q1)
-# 이사ㆍ감사의 개인별 보수 현황	
-df_client.get_individual_executive_compensation_status(corporation_code="00126380", business_year=2019, report_type=ReportType.ANNUAL)
-# 이사ㆍ감사 전체의 보수현황	
-df_client.get_executive_compensation_status(corporation_code="00126380", business_year=2019, report_type=ReportType.ANNUAL)
-# 개인별 보수지급 금액(5억이상 상위5인)
-df_client.get_top_5_individual_executive_compensation(corporation_code="00126380", business_year=2019, report_type=ReportType.ANNUAL)
-# 타법인 출자현황	
-df_client.get_investment_in_other_corporations(corporation_code="00293886", business_year=2019, report_type=ReportType.ANNUAL)
-```
-
-### 재무재표 API (Dataframe)
-
-```python
-from pyopendart.clients.dataframe.financial_information import DataframeFinancialInformationClient
-from pyopendart.enums import ReportType
-
-df_client = DataframeFinancialInformationClient("e32e1ae12ac94446f3133bc0b7e42491b0cde4a3")
-
-# 단일회사,다중회사 주요계정	
-df_client.get_financial_statements_of_major_accounts(corporation_codes=["00293886", "00126380"], business_year=2019, report_type=ReportType.Q1)
-# 단일회사 전체 재무재표
-df_client.get_full_financial_statements(corporation_code="00293886", business_year=2019, report_type=ReportType.Q1)
-# XBRL택소노미 재무제표 양식
-df_client.get_xbrl_taxonomies("BS1")
-```
-
-## 지분공시 API (Dataframe)
-
-```python
-from pyopendart.clients.dataframe.shareholder import DataframeShareholderReportClient
-
-df_client = DataframeShareholderReportClient("e32e1ae12ac94446f3133bc0b7e42491b0cde4a3")
-
-# 대량보유 상황보고
-df_client.get_major_shareholder_reports(corporation_code="00126380")
-# 임원ㆍ주요주주 소유보고	
-df_client.get_executive_shareholder_reports(corporation_code="00126380")
-```
 
 ## License
 This project is licensed under the terms of the MIT license.
