@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyOPENDART"
-version = "0.2.0-alpha.3"
+version = "0.3.0"
 description = "전자공시시스템 DART 파이썬 API (for Humans)"
 authors = ["Seonghyeon Kim <self@seonghyeon.dev>"]
 license = "MIT"
@@ -25,7 +25,6 @@ requests = "^2.25.1"
 furl = "^2.1.0"
 python-dateutil = "^2.8.1"
 pandas = "^1.2.1"
-xmltodict = "^0.12.0"
 httpx = {version = "^0.16.1", optional = true}
 
 [tool.poetry.dev-dependencies]
