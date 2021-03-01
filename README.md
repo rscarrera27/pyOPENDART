@@ -1,4 +1,4 @@
-# OPEN DART Python API (for Humans)
+# pyOPENDART - OPEN DART Python API (for Humans)
 
 전자공시시스템 API 를 편리하게 사용하기 위해 저수준 HTTP API부터 데이터프레임을 리턴하는 고수준 API 등 각종 편리한 API와 유틸리티들을 제공합니다.
 
