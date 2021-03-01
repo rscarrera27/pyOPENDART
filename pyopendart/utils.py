@@ -1,4 +1,3 @@
-from enum import Enum
 from typing import Optional, Union
 
 from numpy import NaN
@@ -22,5 +21,5 @@ def dart_atoi(a: str) -> Optional[Union[int, float]]:
             return int(a.replace(",", ""))
         except ValueError as e:
             return float(a.replace(",", ""))
-    except ValueError:
+    except (ValueError, AttributeError):
         return NaN

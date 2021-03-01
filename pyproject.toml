@@ -34,6 +34,8 @@ isort = "^5.7.0"
 notebook = "^6.2.0"
 mkdocs = "^1.1.2"
 mkdocs-material = "^6.2.8"
+pytest = "^6.2.2"
+pytest-cov = "^2.11.1"
 
 [tool.poetry.extras]
 httpx = ["httpx"]
